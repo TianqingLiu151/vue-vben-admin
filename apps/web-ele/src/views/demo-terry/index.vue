@@ -116,8 +116,8 @@ function handleReset() {
             <div class="flex items-center justify-between">
               <span
                 class="text-xl font-bold text-gray-800 dark:text-gray-100 italic"
-                >用户信息设置</span
-              >
+                >用户信息设置
+              </span>
               <ElTag effect="dark" round type="primary">编辑中</ElTag>
             </div>
           </template>
