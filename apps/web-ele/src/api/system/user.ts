@@ -17,10 +17,7 @@ export namespace SystemUserApi {
  * 获取用户列表数据
  */
 export async function getUserList(params: Recordable<any>) {
-  return requestClient.get<any>(
-    '/system/user/list',
-    { params },
-  );
+  return requestClient.get<any>('/system/user/list', { params });
 }
 
 /**

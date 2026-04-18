@@ -35,12 +35,12 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const { valid } = await formApi.validate();
     if (!valid) return;
     const values = await formApi.getValues();
-    
+
     // 如果是编辑模式且未修改密码，则从提交数据中剔除密码字段
     if (id.value && !values.password) {
       delete values.password;
     }
-    
+
     // 如果是新增模式且未填写密码，则提示错误并拦截提交
     if (!id.value && !values.password) {
       ElMessage.warning('创建用户时密码必填');
