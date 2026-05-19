@@ -11,6 +11,11 @@ export namespace SystemRoleApi {
     remark?: string;
     status: 0 | 1;
   }
+
+  export interface RoleOption {
+    label: string;
+    value: string;
+  }
 }
 
 /**
@@ -52,4 +57,11 @@ async function deleteRole(id: string) {
   return requestClient.delete(`/system/role/${id}`);
 }
 
-export { createRole, deleteRole, getRoleList, updateRole };
+async function getRoleOptions(params: Recordable<any>) {
+  return requestClient.get<Array<SystemRoleApi.RoleOption>>(
+    '/system/role/options',
+    { params },
+  );
+}
+
+export { createRole, deleteRole, getRoleList, getRoleOptions, updateRole };

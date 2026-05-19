@@ -94,9 +94,41 @@ export namespace SystemMenuApi {
  * 获取菜单数据列表
  */
 async function getMenuList() {
-  return requestClient.get<Array<SystemMenuApi.SystemMenu>>(
-    '/system/menu/list',
-  );
+  const resp = await requestClient.get<any>('/system/menu/list');
+
+  const pickFirstDefined = <T>(...values: T[]) =>
+    values.find((v) => v !== undefined);
+
+  const normalizeMenu = (raw: any): SystemMenuApi.SystemMenu => {
+    const menu = { ...raw } as SystemMenuApi.SystemMenu;
+
+    const authCode = pickFirstDefined(
+      menu.authCode,
+      raw?.auth_code,
+      raw?.authcode,
+      raw?.permission,
+      raw?.perms,
+      raw?.perm,
+    );
+    if (menu.authCode === undefined && authCode !== undefined) {
+      menu.authCode = authCode as any;
+    }
+
+    const children = pickFirstDefined(raw?.children, raw?.child);
+    if (menu.children === undefined && Array.isArray(children)) {
+      menu.children = children.map((item: any) => normalizeMenu(item));
+    } else if (Array.isArray(menu.children)) {
+      menu.children = menu.children.map((item: any) => normalizeMenu(item));
+    }
+
+    return menu;
+  };
+
+  if (Array.isArray(resp)) {
+    return resp.map((item) => normalizeMenu(item));
+  }
+
+  return resp;
 }
 
 async function isMenuNameExists(
