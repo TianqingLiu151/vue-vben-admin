@@ -10,6 +10,25 @@ import { useAuthStore } from '#/store';
 
 import { generateAccess } from './access';
 
+function getFirstAccessiblePath(menus: any[]): string | undefined {
+  for (const menu of menus) {
+    if (menu?.children?.length) {
+      const childPath = getFirstAccessiblePath(menu.children);
+      if (childPath) return childPath;
+    }
+    if (menu?.path && !menu?.meta?.hideInMenu) {
+      return menu.path;
+    }
+  }
+}
+
+function hasMenuPath(menus: any[], path: string): boolean {
+  return menus.some((menu) => {
+    if (menu?.path === path) return true;
+    return menu?.children?.length ? hasMenuPath(menu.children, path) : false;
+  });
+}
+
 /**
  * 通用守卫配置
  * @param router
@@ -107,13 +126,20 @@ function setupAccessGuard(router: Router) {
     accessStore.setAccessMenus(accessibleMenus);
     accessStore.setAccessRoutes(accessibleRoutes);
     accessStore.setIsAccessChecked(true);
-    const redirectPath = (from.query.redirect ??
+    const rawRedirectPath = (from.query.redirect ??
       (to.path === preferences.app.defaultHomePath
         ? userInfo.homePath || preferences.app.defaultHomePath
         : to.fullPath)) as string;
+    const redirectPath = decodeURIComponent(rawRedirectPath);
+    const fallbackPath =
+      getFirstAccessiblePath(accessibleMenus) ||
+      preferences.app.defaultHomePath;
+    const targetPath = hasMenuPath(accessibleMenus, redirectPath)
+      ? redirectPath
+      : fallbackPath;
 
     return {
-      ...router.resolve(decodeURIComponent(redirectPath)),
+      ...router.resolve(targetPath),
       replace: true,
     };
   });

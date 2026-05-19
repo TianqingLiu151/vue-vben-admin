@@ -9,6 +9,8 @@ export namespace SystemUserApi {
     realName?: string;
     roles?: string[];
     homePath?: string;
+    status?: 0 | 1;
+    createdAt?: number | string;
     createTime?: number | string;
     [key: string]: any;
   }
@@ -17,12 +19,14 @@ export namespace SystemUserApi {
     username: string;
     password: string;
     realName?: string;
+    status?: 0 | 1;
     roles: string[];
     homePath?: string;
   }
 
   export interface UserUpdate {
     realName?: string;
+    status?: 0 | 1;
     roles?: string[];
     homePath?: string;
     password?: string;
@@ -33,7 +37,7 @@ export namespace SystemUserApi {
  * 获取用户列表数据
  */
 export async function getUserList(params: Recordable<any>) {
-  const resp = await requestClient.get<any>('/system/user/list', { params });
+  const resp = await requestClient.get<any>('/user/list', { params });
 
   const pickFirstDefined = <T>(...values: T[]) =>
     values.find((v) => v !== undefined);
@@ -75,6 +79,9 @@ export async function getUserList(params: Recordable<any>) {
     if (user.createTime === undefined && createTime !== undefined) {
       user.createTime = createTime as any;
     }
+    if (user.createdAt === undefined && createTime !== undefined) {
+      user.createdAt = createTime as any;
+    }
 
     return user;
   };
@@ -98,7 +105,7 @@ export async function getUserList(params: Recordable<any>) {
  * @param data 用户数据
  */
 export async function createUser(data: SystemUserApi.UserCreate) {
-  return requestClient.post('/system/user', data);
+  return requestClient.post('/user', data);
 }
 
 /**
@@ -108,7 +115,7 @@ export async function createUser(data: SystemUserApi.UserCreate) {
  * @param data 用户数据
  */
 export async function updateUser(id: number, data: SystemUserApi.UserUpdate) {
-  return requestClient.put(`/system/user/${id}`, data);
+  return requestClient.put(`/user/${id}`, data);
 }
 
 /**
@@ -116,5 +123,5 @@ export async function updateUser(id: number, data: SystemUserApi.UserUpdate) {
  * @param id 用户 ID
  */
 export async function deleteUser(id: number) {
-  return requestClient.delete(`/system/user/${id}`);
+  return requestClient.delete(`/user/${id}`);
 }

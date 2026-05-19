@@ -69,6 +69,20 @@ export function useFormSchema(options?: {
       rules: z.array(z.string()).optional(),
     },
     {
+      component: 'RadioGroup',
+      componentProps: {
+        buttonStyle: 'solid',
+        options: [
+          { label: $t('common.enabled'), value: 1 },
+          { label: $t('common.disabled'), value: 0 },
+        ],
+        optionType: 'button',
+      },
+      defaultValue: 1,
+      fieldName: 'status',
+      label: '状态',
+    },
+    {
       component: 'Input',
       fieldName: 'homePath',
       label: $t('system.user.homePath'),
@@ -83,11 +97,6 @@ export function useGridFormSchema(): VbenFormSchema[] {
       component: 'Input',
       fieldName: 'username',
       label: $t('system.user.username'),
-    },
-    {
-      component: 'Input',
-      fieldName: 'real_name',
-      label: $t('system.user.realName'),
     },
   ];
 }
@@ -114,12 +123,18 @@ export function useColumns(
       title: $t('system.user.roles'),
     },
     {
+      cellRender: { name: 'CellTag' },
+      field: 'status',
+      title: '状态',
+      width: 100,
+    },
+    {
       field: 'homePath',
       minWidth: 180,
       title: $t('system.user.homePath'),
     },
     {
-      field: 'createTime',
+      field: 'createdAt',
       title: $t('system.user.createTime'),
       width: 180,
     },

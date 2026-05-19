@@ -8,6 +8,12 @@ export function useFormSchema(): VbenFormSchema[] {
   return [
     {
       component: 'Input',
+      fieldName: 'code',
+      label: $t('system.role.id'),
+      rules: 'required',
+    },
+    {
+      component: 'Input',
       fieldName: 'name',
       label: $t('system.role.roleName'),
       rules: 'required',
@@ -33,7 +39,7 @@ export function useFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'Input',
-      fieldName: 'permissions',
+      fieldName: 'menuIds',
       formItemClass: 'items-start',
       label: $t('system.role.setPermissions'),
       modelPropName: 'modelValue',
@@ -48,7 +54,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
       fieldName: 'name',
       label: $t('system.role.roleName'),
     },
-    { component: 'Input', fieldName: 'id', label: $t('system.role.id') },
+    { component: 'Input', fieldName: 'code', label: $t('system.role.id') },
     {
       component: 'Select',
       componentProps: {
@@ -85,7 +91,7 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
       width: 200,
     },
     {
-      field: 'id',
+      field: 'code',
       title: $t('system.role.id'),
       width: 200,
     },

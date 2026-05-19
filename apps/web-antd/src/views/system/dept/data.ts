@@ -8,9 +8,6 @@ import { z } from '#/adapter/form';
 import { getDeptList } from '#/api/system/dept';
 import { $t } from '#/locales';
 
-/**
- * 获取编辑表单的字段配置。如果没有使用多语言，可以直接export一个数组常量
- */
 export function useSchema(): VbenFormSchema[] {
   return [
     {
@@ -30,10 +27,10 @@ export function useSchema(): VbenFormSchema[] {
       componentProps: {
         allowClear: true,
         api: getDeptList,
+        childrenField: 'children',
         class: 'w-full',
         labelField: 'name',
         valueField: 'id',
-        childrenField: 'children',
       },
       fieldName: 'pid',
       label: $t('system.dept.parentDept'),
@@ -42,11 +39,11 @@ export function useSchema(): VbenFormSchema[] {
       component: 'RadioGroup',
       componentProps: {
         buttonStyle: 'solid',
+        optionType: 'button',
         options: [
           { label: $t('common.enabled'), value: 1 },
           { label: $t('common.disabled'), value: 0 },
         ],
-        optionType: 'button',
       },
       defaultValue: 1,
       fieldName: 'status',
@@ -69,11 +66,6 @@ export function useSchema(): VbenFormSchema[] {
   ];
 }
 
-/**
- * 获取表格列配置
- * @description 使用函数的形式返回列数据而不是直接export一个Array常量，是为了响应语言切换时重新翻译表头
- * @param onActionClick 表格操作按钮点击事件
- */
 export function useColumns(
   onActionClick?: OnActionClickFn<SystemDeptApi.SystemDept>,
 ): VxeTableGridColumns<SystemDeptApi.SystemDept> {
@@ -84,7 +76,7 @@ export function useColumns(
       fixed: 'left',
       title: $t('system.dept.deptName'),
       treeNode: true,
-      width: 150,
+      width: 180,
     },
     {
       cellRender: { name: 'CellTag' },
@@ -99,6 +91,7 @@ export function useColumns(
     },
     {
       field: 'remark',
+      minWidth: 180,
       title: $t('system.dept.remark'),
     },
     {
@@ -111,16 +104,12 @@ export function useColumns(
         },
         name: 'CellOperation',
         options: [
+          { code: 'append', text: '新增下级' },
+          'edit',
           {
-            code: 'append',
-            text: '新增下级',
-          },
-          'edit', // 默认的编辑按钮
-          {
-            code: 'delete', // 默认的删除按钮
-            disabled: (row: SystemDeptApi.SystemDept) => {
-              return !!(row.children && row.children.length > 0);
-            },
+            code: 'delete',
+            disabled: (row: SystemDeptApi.SystemDept) =>
+              !!(row.children && row.children.length > 0),
           },
         ],
       },

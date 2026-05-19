@@ -52,24 +52,13 @@ export function useColumns(
       title: $t('system.menu.path'),
       width: 200,
     },
-
     {
       align: 'left',
       field: 'component',
       formatter: ({ row }) => {
-        switch (row.type) {
-          case 'catalog':
-          case 'menu': {
-            return row.component ?? '';
-          }
-          case 'embedded': {
-            return row.meta?.iframeSrc ?? '';
-          }
-          case 'link': {
-            return row.meta?.link ?? '';
-          }
-        }
-        return '';
+        if (row.type === 'embedded') return row.meta?.iframeSrc ?? '';
+        if (row.type === 'link') return row.meta?.link ?? '';
+        return row.component ?? '';
       },
       minWidth: 200,
       title: $t('system.menu.component'),
@@ -80,7 +69,6 @@ export function useColumns(
       title: $t('system.menu.status'),
       width: 100,
     },
-
     {
       align: 'right',
       cellRender: {
@@ -89,14 +77,7 @@ export function useColumns(
           onClick: onActionClick,
         },
         name: 'CellOperation',
-        options: [
-          {
-            code: 'append',
-            text: '新增下级',
-          },
-          'edit', // 默认的编辑按钮
-          'delete', // 默认的删除按钮
-        ],
+        options: [{ code: 'append', text: '新增下级' }, 'edit', 'delete'],
       },
       field: 'operation',
       fixed: 'right',

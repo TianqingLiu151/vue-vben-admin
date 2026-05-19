@@ -18,8 +18,6 @@ import { useVbenForm, z } from '#/adapter/form';
 import {
   createMenu,
   getMenuList,
-  isMenuNameExists,
-  isMenuPathExists,
   SystemMenuApi,
   updateMenu,
 } from '#/api/system/menu';
@@ -53,18 +51,7 @@ const schema: VbenFormSchema[] = [
     rules: z
       .string()
       .min(2, $t('ui.formRules.minLength', [$t('system.menu.menuName'), 2]))
-      .max(30, $t('ui.formRules.maxLength', [$t('system.menu.menuName'), 30]))
-      .refine(
-        async (value: string) => {
-          return !(await isMenuNameExists(value, formData.value?.id));
-        },
-        (value) => ({
-          message: $t('ui.formRules.alreadyExists', [
-            $t('system.menu.menuName'),
-            value,
-          ]),
-        }),
-      ),
+      .max(30, $t('ui.formRules.maxLength', [$t('system.menu.menuName'), 30])),
   },
   {
     component: 'ApiTreeSelect',
@@ -136,17 +123,6 @@ const schema: VbenFormSchema[] = [
           return value.startsWith('/');
         },
         $t('ui.formRules.startWith', [$t('system.menu.path'), '/']),
-      )
-      .refine(
-        async (value: string) => {
-          return !(await isMenuPathExists(value, formData.value?.id));
-        },
-        (value) => ({
-          message: $t('ui.formRules.alreadyExists', [
-            $t('system.menu.path'),
-            value,
-          ]),
-        }),
       ),
   },
   {
@@ -170,9 +146,6 @@ const schema: VbenFormSchema[] = [
         },
         $t('ui.formRules.startWith', [$t('system.menu.path'), '/']),
       )
-      .refine(async (value: string) => {
-        return await isMenuPathExists(value, formData.value?.id);
-      }, $t('system.menu.activePathMustExist'))
       .optional(),
   },
   {

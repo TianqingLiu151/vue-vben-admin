@@ -55,6 +55,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
           homePath: toOptionalString(values.homePath),
           realName: toOptionalString(values.realName),
           roles,
+          status: values.status,
         };
         if (toOptionalString(values.password)) {
           payload.password = values.password.trim();
@@ -85,6 +86,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
           password,
           realName: toOptionalString(values.realName),
           roles,
+          status: values.status ?? 1,
           username,
         });
       }
@@ -114,6 +116,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         ...baseValues,
         password: '',
         roles: data?.roles ?? [],
+        status: data?.status ?? 1,
       });
     }
   },

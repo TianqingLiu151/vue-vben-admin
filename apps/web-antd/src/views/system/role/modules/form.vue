@@ -37,8 +37,18 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const { valid } = await formApi.validate();
     if (!valid) return;
     const values = await formApi.getValues();
+    const payload = {
+      code: values.code,
+      menuIds: values.menuIds ?? values.permissions ?? [],
+      name: values.name,
+      remark: values.remark,
+      status: values.status ?? 1,
+    };
     drawerApi.lock();
-    (id.value ? updateRole(id.value, values) : createRole(values))
+    (id.value
+      ? updateRole(id.value, payload as any)
+      : createRole(payload as any)
+    )
       .then(() => {
         emits('success');
         drawerApi.close();
@@ -66,7 +76,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
       // Wait for Vue to flush DOM updates (form fields mounted)
       await nextTick();
       if (data) {
-        formApi.setValues(data);
+        formApi.setValues({
+          ...data,
+          menuIds: data.menuIds ?? data.permissions ?? [],
+        });
       }
     }
   },
@@ -100,7 +113,7 @@ function getNodeClass(node: Recordable<any>) {
 <template>
   <Drawer :title="getDrawerTitle">
     <Form>
-      <template #permissions="slotProps">
+      <template #menuIds="slotProps">
         <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
           <Tree
             :tree-data="permissions"

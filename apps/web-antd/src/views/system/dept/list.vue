@@ -131,7 +131,7 @@ function refreshGrid() {
 <template>
   <Page auto-content-height>
     <FormModal @success="refreshGrid" />
-    <Grid table-title="部门列表">
+    <Grid :table-title="$t('system.dept.list')">
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">
           <Plus class="size-5" />

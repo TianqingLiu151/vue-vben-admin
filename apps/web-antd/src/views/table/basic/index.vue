@@ -1,21 +1,18 @@
 <script lang="ts" setup>
-import type { Recordable } from '@vben/types';
-
 import type {
   OnActionClickParams,
   VxeTableGridOptions,
 } from '#/adapter/vxe-table';
-import type { SystemRoleApi } from '#/api';
+import type { ProductTableApi } from '#/api';
 
 import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message, Modal } from 'ant-design-vue';
+import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteRole, getRoleList, updateRole } from '#/api';
-import { $t } from '#/locales';
+import { deleteTableItem, getTableList } from '#/api';
 
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
@@ -29,18 +26,17 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
-    fieldMappingTime: [['createTime', ['startTime', 'endTime']]],
     schema: useGridFormSchema(),
     submitOnChange: true,
   },
   gridOptions: {
-    columns: useColumns(onActionClick, onStatusChange),
+    columns: useColumns(onActionClick),
     height: 'auto',
     keepSource: true,
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getRoleList({
+          return await getTableList({
             page: page.currentPage,
             pageSize: page.pageSize,
             ...formValues,
@@ -51,7 +47,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
     rowConfig: {
       keyField: 'id',
     },
-
     toolbarConfig: {
       custom: true,
       export: false,
@@ -59,14 +54,14 @@ const [Grid, gridApi] = useVbenVxeGrid({
       search: true,
       zoom: true,
     },
-  } as VxeTableGridOptions<SystemRoleApi.SystemRole>,
+  } as VxeTableGridOptions<ProductTableApi.Product>,
 });
 
 function can(code: string) {
   return hasAccessByCodes([code]);
 }
 
-function onActionClick(e: OnActionClickParams<SystemRoleApi.SystemRole>) {
+function onActionClick(e: OnActionClickParams<ProductTableApi.Product>) {
   switch (e.code) {
     case 'delete': {
       onDelete(e.row);
@@ -79,55 +74,24 @@ function onActionClick(e: OnActionClickParams<SystemRoleApi.SystemRole>) {
   }
 }
 
-function confirm(content: string, title: string) {
-  return new Promise((resolve, reject) => {
-    Modal.confirm({
-      content,
-      onCancel() {
-        reject(new Error('cancelled'));
-      },
-      onOk() {
-        resolve(true);
-      },
-      title,
-    });
-  });
+function onCreate() {
+  formDrawerApi.setData({}).open();
 }
 
-async function onStatusChange(
-  newStatus: number,
-  row: SystemRoleApi.SystemRole,
-) {
-  const status: Recordable<string> = {
-    0: '禁用',
-    1: '启用',
-  };
-  try {
-    await confirm(
-      `确认将 ${row.name} 的状态切换为「${status[newStatus.toString()]}」吗？`,
-      '切换状态',
-    );
-    await updateRole(row.id, { status: newStatus } as any);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function onEdit(row: SystemRoleApi.SystemRole) {
+function onEdit(row: ProductTableApi.Product) {
   formDrawerApi.setData(row).open();
 }
 
-function onDelete(row: SystemRoleApi.SystemRole) {
+function onDelete(row: ProductTableApi.Product) {
   const hideLoading = message.loading({
-    content: $t('ui.actionMessage.deleting', [row.name]),
+    content: `正在删除 ${row.productName}`,
     duration: 0,
     key: 'action_process_msg',
   });
-  deleteRole(row.id)
+  deleteTableItem(row.id)
     .then(() => {
       message.success({
-        content: $t('ui.actionMessage.deleteSuccess', [row.name]),
+        content: `已删除 ${row.productName}`,
         key: 'action_process_msg',
       });
       onRefresh();
@@ -140,23 +104,20 @@ function onDelete(row: SystemRoleApi.SystemRole) {
 function onRefresh() {
   gridApi.query();
 }
-
-function onCreate() {
-  formDrawerApi.setData({}).open();
-}
 </script>
+
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
-    <Grid :table-title="$t('system.role.list')">
+    <Grid table-title="基础表格">
       <template #toolbar-tools>
         <Button
-          v-if="can('system:role:create')"
+          v-if="can('demo:table:create')"
           type="primary"
           @click="onCreate"
         >
           <Plus class="size-5" />
-          {{ $t('ui.actionTitle.create', [$t('system.role.name')]) }}
+          新增商品
         </Button>
       </template>
     </Grid>
