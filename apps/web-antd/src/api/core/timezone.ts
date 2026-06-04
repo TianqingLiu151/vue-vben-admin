@@ -1,26 +1,43 @@
 import { requestClient } from '#/api/request';
 
+interface TimezoneOption {
+  label: string;
+  value: string;
+}
+
 /**
- * 获取系统支持的时区列表
+ * Get system timezone.
+ */
+export async function getSystemTimezoneApi(): Promise<
+  null | string | undefined
+> {
+  return requestClient.get<null | string | undefined>('/timezone');
+}
+
+/**
+ * Set system timezone.
+ */
+export async function setSystemTimezoneApi(timezone: string): Promise<void> {
+  return requestClient.post('/timezone', { timezone });
+}
+
+/**
+ * Get timezone options.
  */
 export async function getTimezoneOptionsApi() {
-  return await requestClient.get<
-    {
-      label: string;
-      value: string;
-    }[]
-  >('/timezone/getTimezoneOptions');
+  return requestClient.get<TimezoneOption[]>('/timezone/options');
 }
+
 /**
- * 获取用户时区
+ * Get user timezone.
  */
 export async function getTimezoneApi(): Promise<null | string | undefined> {
-  return requestClient.get<null | string | undefined>('/timezone/getTimezone');
+  return requestClient.get<null | string | undefined>('/user/timezone');
 }
+
 /**
- * 设置用户时区
- * @param timezone 时区
+ * Set user timezone.
  */
 export async function setTimezoneApi(timezone: string): Promise<void> {
-  return requestClient.post('/timezone/setTimezone', { timezone });
+  return requestClient.post('/user/timezone', { timezone });
 }

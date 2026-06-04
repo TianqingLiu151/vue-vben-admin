@@ -99,8 +99,51 @@ async function getMenuList() {
   const pickFirstDefined = <T>(...values: T[]) =>
     values.find((v) => v !== undefined);
 
+  const hasChildren = (menu: SystemMenuApi.SystemMenu) =>
+    Array.isArray(menu.children) && menu.children.length > 0;
+
+  const buildMenuTree = (
+    menus: SystemMenuApi.SystemMenu[],
+  ): SystemMenuApi.SystemMenu[] => {
+    const nodeMap = new Map<string, SystemMenuApi.SystemMenu>();
+    const roots: SystemMenuApi.SystemMenu[] = [];
+
+    menus.forEach((menu) => {
+      nodeMap.set(String(menu.id), { ...menu, children: [] });
+    });
+
+    menus.forEach((menu) => {
+      const node = nodeMap.get(String(menu.id));
+      if (!node) return;
+
+      const parentId = node.pid;
+      const parent =
+        parentId === undefined || parentId === null || parentId === ''
+          ? undefined
+          : nodeMap.get(String(parentId));
+
+      if (parent) {
+        parent.children?.push(node);
+      } else {
+        roots.push(node);
+      }
+    });
+
+    return roots;
+  };
+
   const normalizeMenu = (raw: any): SystemMenuApi.SystemMenu => {
     const menu = { ...raw } as SystemMenuApi.SystemMenu;
+
+    const pid = pickFirstDefined(
+      menu.pid,
+      raw?.parentId,
+      raw?.parent_id,
+      raw?.parentid,
+    );
+    if (menu.pid === undefined && pid !== undefined) {
+      menu.pid = pid as any;
+    }
 
     const authCode = pickFirstDefined(
       menu.authCode,
@@ -125,7 +168,11 @@ async function getMenuList() {
   };
 
   if (Array.isArray(resp)) {
-    return resp.map((item) => normalizeMenu(item));
+    const menus = resp.map((item) => normalizeMenu(item));
+
+    return menus.some((menu) => hasChildren(menu))
+      ? menus
+      : buildMenuTree(menus);
   }
 
   return resp;
