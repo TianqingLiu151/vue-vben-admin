@@ -2,6 +2,7 @@
 import type { TodoApi } from '#/api/todo';
 
 import { IconifyIcon } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import {
   Button,
@@ -53,12 +54,14 @@ function formatDate(value?: string) {
   <main class="todo-main">
     <div class="todo-main__header">
       <div>
-        <div class="todo-kicker">{{ total }} items</div>
+        <div class="todo-kicker">
+          {{ $t('todo.taskList.items', { count: total }) }}
+        </div>
         <h2>{{ currentTitle }}</h2>
       </div>
       <Button @click="emit('refresh')">
         <IconifyIcon icon="lucide:rotate-cw" />
-        刷新
+        {{ $t('todo.taskList.refresh') }}
       </Button>
     </div>
 
@@ -66,12 +69,12 @@ function formatDate(value?: string) {
       <Input
         v-model:value="quickTitle"
         allow-clear
-        placeholder="输入任务，回车创建"
+        :placeholder="$t('todo.taskList.quickPlaceholder')"
         @press-enter="emit('createQuickTask')"
       />
       <Button type="primary" @click="emit('createQuickTask')">
         <IconifyIcon icon="lucide:plus" />
-        新建
+        {{ $t('todo.taskList.create') }}
       </Button>
     </div>
 
@@ -80,24 +83,26 @@ function formatDate(value?: string) {
         v-model:value="keyword"
         allow-clear
         class="todo-filter__keyword"
-        placeholder="关键词"
+        :placeholder="$t('todo.taskList.keyword')"
         @press-enter="emit('refresh')"
       />
       <Select
         v-model:value="statusFilter"
         allow-clear
         :options="statusOptions"
-        placeholder="状态"
+        :placeholder="$t('todo.taskList.status')"
         @change="emit('refresh')"
       />
       <Select
         v-model:value="priorityFilter"
         allow-clear
         :options="priorityOptions"
-        placeholder="优先级"
+        :placeholder="$t('todo.taskList.priority')"
         @change="emit('refresh')"
       />
-      <Button @click="emit('resetFilters')">重置</Button>
+      <Button @click="emit('resetFilters')">
+        {{ $t('todo.taskList.reset') }}
+      </Button>
     </div>
 
     <Spin :spinning="loading">
@@ -176,7 +181,11 @@ function formatDate(value?: string) {
           </Space>
         </article>
       </div>
-      <Empty v-else class="todo-empty" description="暂无待办" />
+      <Empty
+        v-else
+        class="todo-empty"
+        :description="$t('todo.taskList.empty')"
+      />
     </Spin>
 
     <div class="todo-pagination">

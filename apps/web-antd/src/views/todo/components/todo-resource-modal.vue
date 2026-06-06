@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { TodoResourceModalState } from '../types';
 
+import { $t } from '@vben/locales';
+
 import { Checkbox, Form, Input, InputNumber, Modal } from 'ant-design-vue';
 
 const emit = defineEmits<{
@@ -14,25 +16,35 @@ const model = defineModel<TodoResourceModalState>({ required: true });
 <template>
   <Modal
     v-model:open="model.open"
-    :title="`${model.id ? '编辑' : '新建'}${model.type === 'list' ? '清单' : '标签'}`"
+    :title="
+      (model.id ? $t('todo.resourceModal.edit') : $t('todo.resourceModal.create')) +
+      (model.type === 'list'
+        ? $t('todo.resourceModal.list')
+        : $t('todo.resourceModal.tag'))
+    "
     @ok="emit('save')"
   >
     <Form layout="vertical">
-      <Form.Item label="名称">
+      <Form.Item :label="$t('todo.resourceModal.name')">
         <Input v-model:value="model.name" />
       </Form.Item>
-      <Form.Item label="颜色">
+      <Form.Item :label="$t('todo.resourceModal.color')">
         <input v-model="model.color" class="todo-color-input" type="color" />
       </Form.Item>
       <template v-if="model.type === 'list'">
-        <Form.Item label="图标">
-          <Input v-model:value="model.icon" placeholder="lucide:list" />
+        <Form.Item :label="$t('todo.resourceModal.icon')">
+          <Input
+            v-model:value="model.icon"
+            :placeholder="$t('todo.resourceModal.iconPlaceholder')"
+          />
         </Form.Item>
-        <Form.Item label="排序">
+        <Form.Item :label="$t('todo.resourceModal.sortOrder')">
           <InputNumber v-model:value="model.sortOrder" class="w-full" />
         </Form.Item>
         <Form.Item>
-          <Checkbox v-model:checked="model.isArchived">归档清单</Checkbox>
+          <Checkbox v-model:checked="model.isArchived">
+            {{ $t('todo.resourceModal.archiveList') }}
+          </Checkbox>
         </Form.Item>
       </template>
     </Form>

@@ -4,6 +4,7 @@ import type { NavView, ResourceType, TodoNavView } from '../types';
 import type { TodoApi } from '#/api/todo';
 
 import { IconifyIcon } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import { Button, Space, Spin, Tooltip } from 'ant-design-vue';
 
@@ -37,10 +38,10 @@ const emit = defineEmits<{
   <aside class="todo-sidebar">
     <div class="todo-sidebar__header">
       <div>
-        <div class="todo-kicker">Personal</div>
-        <h1>待办</h1>
+        <div class="todo-kicker">{{ $t('todo.personal') }}</div>
+        <h1>{{ $t('todo.title') }}</h1>
       </div>
-      <Tooltip title="刷新">
+      <Tooltip :title="$t('todo.sidebar.refresh')">
         <Button size="small" type="text" @click="emit('refresh')">
           <IconifyIcon icon="lucide:refresh-cw" />
         </Button>
@@ -64,7 +65,7 @@ const emit = defineEmits<{
 
       <section class="todo-nav-section">
         <div class="todo-nav-section__title">
-          <span>清单</span>
+          <span>{{ $t('todo.sidebar.lists') }}</span>
           <Button
             size="small"
             type="text"
@@ -110,7 +111,7 @@ const emit = defineEmits<{
 
       <section class="todo-nav-section">
         <div class="todo-nav-section__title">
-          <span>标签</span>
+          <span>{{ $t('todo.sidebar.tags') }}</span>
           <Button size="small" type="text" @click="emit('editResource', 'tag')">
             <IconifyIcon icon="lucide:plus" />
           </Button>

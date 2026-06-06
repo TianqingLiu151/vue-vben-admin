@@ -1,0 +1,93 @@
+{
+  "title": "待办",
+  "personal": "Personal",
+  "views": {
+    "inbox": "收件箱",
+    "today": "今日",
+    "planned": "计划",
+    "completed": "已完成"
+  },
+  "sidebar": {
+    "refresh": "刷新",
+    "lists": "清单",
+    "tags": "标签"
+  },
+  "taskList": {
+    "items": "{count} 项",
+    "refresh": "刷新",
+    "quickPlaceholder": "输入任务，回车创建",
+    "create": "新建",
+    "keyword": "关键词",
+    "status": "状态",
+    "priority": "优先级",
+    "reset": "重置",
+    "empty": "暂无待办"
+  },
+  "detail": {
+    "title": "任务详情",
+    "delete": "删除",
+    "save": "保存",
+    "titleLabel": "标题",
+    "description": "描述",
+    "list": "清单",
+    "priority": "优先级",
+    "status": "状态",
+    "repeat": "重复",
+    "dueDate": "截止日期",
+    "dueTime": "截止时间",
+    "tags": "标签",
+    "selectTags": "选择标签",
+    "reminderAt": "提醒时间",
+    "starTask": "星标任务",
+    "subtasks": "子任务",
+    "newSubtask": "新增子任务"
+  },
+  "resourceModal": {
+    "edit": "编辑",
+    "create": "新建",
+    "list": "清单",
+    "tag": "标签",
+    "name": "名称",
+    "color": "颜色",
+    "icon": "图标",
+    "sortOrder": "排序",
+    "archiveList": "归档清单",
+    "iconPlaceholder": "lucide:list"
+  },
+  "messages": {
+    "taskCreated": "任务已创建",
+    "taskDeleted": "任务已删除",
+    "taskSaved": "任务已保存",
+    "enterTaskTitle": "请输入任务标题",
+    "enterName": "请输入名称",
+    "saved": "已保存",
+    "deleteTaskTitle": "删除任务",
+    "deleteTaskContent": "确定删除「{title}」吗？",
+    "deleteResourceTitle": "删除「{name}」",
+    "deleteListDesc": "删除清单后，清单内任务会回到无清单状态。",
+    "deleteTagDesc": "删除标签后，任务上的该标签会被移除。",
+    "delete": "删除",
+    "noList": "无清单"
+  },
+  "priority": {
+    "p1": "P1 高",
+    "p2": "P2 中高",
+    "p3": "P3 普通",
+    "p4": "P4 低"
+  },
+  "status": {
+    "todo": "待办",
+    "doing": "进行中",
+    "done": "已完成",
+    "cancelled": "已取消"
+  },
+  "repeat": {
+    "none": "不重复",
+    "daily": "每天",
+    "weekdays": "工作日",
+    "weekly": "每周",
+    "monthly": "每月",
+    "yearly": "每年",
+    "every3Days": "每 3 天"
+  }
+}

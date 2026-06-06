@@ -10,6 +10,8 @@ import type { TodoApi } from '#/api/todo';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { $t } from '@vben/locales';
+
 import { message, Modal } from 'ant-design-vue';
 import dayjs from 'dayjs';
 
@@ -95,7 +97,7 @@ export function useTodoPage() {
   });
 
   const listOptions = computed(() => [
-    { label: '无清单', value: '' },
+    { label: $t('todo.messages.noList'), value: '' },
     ...lists.value.map((item) => ({ label: item.name, value: item.id })),
   ]);
 
@@ -125,17 +127,18 @@ export function useTodoPage() {
     if (currentListId.value) {
       return (
         lists.value.find((item) => item.id === currentListId.value)?.name ??
-        '清单'
+        $t('todo.resourceModal.list')
       );
     }
     if (currentTagId.value) {
       return (
         tags.value.find((item) => item.id === currentTagId.value)?.name ??
-        '标签'
+        $t('todo.resourceModal.tag')
       );
     }
     return (
-      baseViews.find((item) => item.key === currentView.value)?.label ?? '待办'
+      baseViews.value.find((item) => item.key === currentView.value)?.label ??
+      $t('todo.title')
     );
   });
 
@@ -235,7 +238,7 @@ export function useTodoPage() {
       title,
     });
     quickTitle.value = '';
-    message.success('任务已创建');
+    message.success($t('todo.messages.taskCreated'));
     await loadTasks();
   }
 
@@ -288,17 +291,17 @@ export function useTodoPage() {
 
   function confirmDeleteTask(task: TodoApi.TodoTaskItem) {
     Modal.confirm({
-      content: `确定删除「${task.title}」吗？`,
-      okText: '删除',
+      content: $t('todo.messages.deleteTaskContent', { title: task.title }),
+      okText: $t('todo.messages.delete'),
       okType: 'danger',
-      title: '删除任务',
+      title: $t('todo.messages.deleteTaskTitle'),
       async onOk() {
         await deleteTodoTask(task.id);
         if (activeTask.value?.id === task.id) {
           detailOpen.value = false;
           activeTask.value = undefined;
         }
-        message.success('任务已删除');
+        message.success($t('todo.messages.taskDeleted'));
         await loadTasks();
       },
     });
@@ -308,7 +311,7 @@ export function useTodoPage() {
     if (!activeTask.value) return;
     const title = draft.title.trim();
     if (!title) {
-      message.warning('请输入任务标题');
+      message.warning($t('todo.messages.enterTaskTitle'));
       return;
     }
 
@@ -330,7 +333,7 @@ export function useTodoPage() {
         title,
       } as TodoApi.TodoTaskUpdateParams);
       patchTaskInList(result);
-      message.success('任务已保存');
+      message.success($t('todo.messages.taskSaved'));
       await loadTasks();
     } finally {
       saving.value = false;
@@ -391,7 +394,7 @@ export function useTodoPage() {
   async function saveResource() {
     const name = resourceModal.name.trim();
     if (!name) {
-      message.warning('请输入名称');
+      message.warning($t('todo.messages.enterName'));
       return;
     }
     if (resourceModal.type === 'list') {
@@ -417,7 +420,7 @@ export function useTodoPage() {
       });
     }
     resourceModal.open = false;
-    message.success('已保存');
+    message.success($t('todo.messages.saved'));
     await loadMeta();
   }
 
@@ -428,11 +431,11 @@ export function useTodoPage() {
     Modal.confirm({
       content:
         type === 'list'
-          ? '删除清单后，清单内任务会回到无清单状态。'
-          : '删除标签后，任务上的该标签会被移除。',
-      okText: '删除',
+          ? $t('todo.messages.deleteListDesc')
+          : $t('todo.messages.deleteTagDesc'),
+      okText: $t('todo.messages.delete'),
       okType: 'danger',
-      title: `删除「${item.name}」`,
+      title: $t('todo.messages.deleteResourceTitle', { name: item.name }),
       async onOk() {
         if (type === 'list') {
           await deleteTodoList(item.id);

@@ -1,35 +1,47 @@
 import type { TodoNavView } from './types';
 
-export const baseViews: TodoNavView[] = [
-  { icon: 'lucide:inbox', key: 'inbox', label: '收件箱' },
-  { icon: 'lucide:sun', key: 'today', label: '今日' },
-  { icon: 'lucide:calendar-days', key: 'planned', label: '计划' },
-  { icon: 'lucide:check-check', key: 'completed', label: '已完成' },
-];
+import { computed } from 'vue';
 
-export const priorityOptions = [
-  { label: 'P1 高', value: 1 },
-  { label: 'P2 中高', value: 2 },
-  { label: 'P3 普通', value: 3 },
-  { label: 'P4 低', value: 4 },
-];
+import { $t } from '@vben/locales';
 
-export const statusOptions = [
-  { label: '待办', value: 'todo' },
-  { label: '进行中', value: 'doing' },
-  { label: '已完成', value: 'completed' },
-  { label: '已取消', value: 'cancelled' },
-];
+export const baseViews = computed<TodoNavView[]>(() => [
+  { icon: 'lucide:inbox', key: 'inbox', label: $t('todo.views.inbox') },
+  { icon: 'lucide:sun', key: 'today', label: $t('todo.views.today') },
+  {
+    icon: 'lucide:calendar-days',
+    key: 'planned',
+    label: $t('todo.views.planned'),
+  },
+  {
+    icon: 'lucide:check-check',
+    key: 'completed',
+    label: $t('todo.views.completed'),
+  },
+]);
 
-export const repeatOptions = [
-  { label: '不重复', value: '' },
-  { label: '每天', value: 'daily' },
-  { label: '工作日', value: 'weekdays' },
-  { label: '每周', value: 'weekly' },
-  { label: '每月', value: 'monthly' },
-  { label: '每年', value: 'yearly' },
-  { label: '每 3 天', value: 'every:3' },
-];
+export const priorityOptions = computed(() => [
+  { label: $t('todo.priority.p1'), value: 1 },
+  { label: $t('todo.priority.p2'), value: 2 },
+  { label: $t('todo.priority.p3'), value: 3 },
+  { label: $t('todo.priority.p4'), value: 4 },
+]);
+
+export const statusOptions = computed(() => [
+  { label: $t('todo.status.todo'), value: 'todo' },
+  { label: $t('todo.status.doing'), value: 'doing' },
+  { label: $t('todo.status.done'), value: 'completed' },
+  { label: $t('todo.status.cancelled'), value: 'cancelled' },
+]);
+
+export const repeatOptions = computed(() => [
+  { label: $t('todo.repeat.none'), value: '' },
+  { label: $t('todo.repeat.daily'), value: 'daily' },
+  { label: $t('todo.repeat.weekdays'), value: 'weekdays' },
+  { label: $t('todo.repeat.weekly'), value: 'weekly' },
+  { label: $t('todo.repeat.monthly'), value: 'monthly' },
+  { label: $t('todo.repeat.yearly'), value: 'yearly' },
+  { label: $t('todo.repeat.every3Days'), value: 'every:3' },
+]);
 
 export function colorOfPriority(priority: number) {
   return (

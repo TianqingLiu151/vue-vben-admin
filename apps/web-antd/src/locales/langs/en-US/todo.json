@@ -1,0 +1,93 @@
+{
+  "title": "Todos",
+  "personal": "Personal",
+  "views": {
+    "inbox": "Inbox",
+    "today": "Today",
+    "planned": "Planned",
+    "completed": "Completed"
+  },
+  "sidebar": {
+    "refresh": "Refresh",
+    "lists": "Lists",
+    "tags": "Tags"
+  },
+  "taskList": {
+    "items": "{count} items",
+    "refresh": "Refresh",
+    "quickPlaceholder": "Enter task title, press Enter to create",
+    "create": "Create",
+    "keyword": "Keyword",
+    "status": "Status",
+    "priority": "Priority",
+    "reset": "Reset",
+    "empty": "No tasks yet"
+  },
+  "detail": {
+    "title": "Task Detail",
+    "delete": "Delete",
+    "save": "Save",
+    "titleLabel": "Title",
+    "description": "Description",
+    "list": "List",
+    "priority": "Priority",
+    "status": "Status",
+    "repeat": "Repeat",
+    "dueDate": "Due Date",
+    "dueTime": "Due Time",
+    "tags": "Tags",
+    "selectTags": "Select tags",
+    "reminderAt": "Reminder",
+    "starTask": "Star task",
+    "subtasks": "Subtasks",
+    "newSubtask": "New subtask"
+  },
+  "resourceModal": {
+    "edit": "Edit",
+    "create": "Create",
+    "list": "List",
+    "tag": "Tag",
+    "name": "Name",
+    "color": "Color",
+    "icon": "Icon",
+    "sortOrder": "Sort Order",
+    "archiveList": "Archive list",
+    "iconPlaceholder": "lucide:list"
+  },
+  "messages": {
+    "taskCreated": "Task created",
+    "taskDeleted": "Task deleted",
+    "taskSaved": "Task saved",
+    "enterTaskTitle": "Please enter task title",
+    "enterName": "Please enter a name",
+    "saved": "Saved",
+    "deleteTaskTitle": "Delete Task",
+    "deleteTaskContent": "Are you sure to delete \"{title}\"?",
+    "deleteResourceTitle": "Delete \"{name}\"",
+    "deleteListDesc": "After deleting the list, tasks in it will return to the no-list state.",
+    "deleteTagDesc": "After deleting the tag, it will be removed from all tasks.",
+    "delete": "Delete",
+    "noList": "No List"
+  },
+  "priority": {
+    "p1": "P1 High",
+    "p2": "P2 Medium-High",
+    "p3": "P3 Normal",
+    "p4": "P4 Low"
+  },
+  "status": {
+    "todo": "To Do",
+    "doing": "In Progress",
+    "done": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "repeat": {
+    "none": "No Repeat",
+    "daily": "Daily",
+    "weekdays": "Weekdays",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "every3Days": "Every 3 Days"
+  }
+}

@@ -4,6 +4,7 @@ import type { TaskDraft } from '../types';
 import type { TodoApi } from '#/api/todo';
 
 import { IconifyIcon } from '@vben/icons';
+import { $t } from '@vben/locales';
 
 import {
   Button,
@@ -40,47 +41,54 @@ const newSubtaskTitle = defineModel<string>('newSubtaskTitle', {
 </script>
 
 <template>
-  <Drawer v-model:open="open" destroy-on-close title="任务详情" width="520">
+  <Drawer
+    v-model:open="open"
+    destroy-on-close
+    :title="$t('todo.detail.title')"
+    width="520"
+  >
     <template #extra>
       <Space v-if="activeTask">
-        <Button danger @click="emit('deleteTask', activeTask)">删除</Button>
+        <Button danger @click="emit('deleteTask', activeTask)">
+          {{ $t('todo.detail.delete') }}
+        </Button>
         <Button :loading="saving" type="primary" @click="emit('save')">
-          保存
+          {{ $t('todo.detail.save') }}
         </Button>
       </Space>
     </template>
 
     <div v-if="activeTask">
       <Form layout="vertical">
-        <Form.Item label="标题">
+        <Form.Item :label="$t('todo.detail.titleLabel')">
           <Input v-model:value="draft.title" />
         </Form.Item>
-        <Form.Item label="描述">
+        <Form.Item :label="$t('todo.detail.description')">
           <Input.TextArea v-model:value="draft.description" :rows="4" />
         </Form.Item>
         <div class="todo-form-grid">
-          <Form.Item label="清单">
+          <Form.Item :label="$t('todo.detail.list')">
             <Select v-model:value="draft.listId" :options="listOptions" />
           </Form.Item>
-          <Form.Item label="优先级">
+          <Form.Item :label="$t('todo.detail.priority')">
             <Select v-model:value="draft.priority" :options="priorityOptions" />
           </Form.Item>
-          <Form.Item label="状态">
+          <Form.Item :label="$t('todo.detail.status')">
             <Select v-model:value="draft.status" :options="statusOptions" />
           </Form.Item>
-          <Form.Item label="重复">
+          <Form.Item :label="$t('todo.detail.repeat')">
             <Select v-model:value="draft.repeatRule" :options="repeatOptions" />
           </Form.Item>
         </div>
         <div class="todo-form-grid">
-          <Form.Item label="截止日期">
+          <Form.Item :label="$t('todo.detail.dueDate')">
             <input
               v-model="draft.dueDate"
               class="todo-native-input"
               type="date"
             />
           </Form.Item>
-          <Form.Item label="截止时间">
+          <Form.Item :label="$t('todo.detail.dueTime')">
             <input
               v-model="draft.dueTime"
               class="todo-native-input"
@@ -88,15 +96,15 @@ const newSubtaskTitle = defineModel<string>('newSubtaskTitle', {
             />
           </Form.Item>
         </div>
-        <Form.Item label="标签">
+        <Form.Item :label="$t('todo.detail.tags')">
           <Select
             v-model:value="draft.tagIds"
             mode="multiple"
             :options="tagOptions"
-            placeholder="选择标签"
+            :placeholder="$t('todo.detail.selectTags')"
           />
         </Form.Item>
-        <Form.Item label="提醒时间">
+        <Form.Item :label="$t('todo.detail.reminderAt')">
           <input
             v-model="draft.reminderAt"
             class="todo-native-input"
@@ -104,13 +112,15 @@ const newSubtaskTitle = defineModel<string>('newSubtaskTitle', {
           />
         </Form.Item>
         <Form.Item>
-          <Checkbox v-model:checked="draft.isStarred">星标任务</Checkbox>
+          <Checkbox v-model:checked="draft.isStarred">
+            {{ $t('todo.detail.starTask') }}
+          </Checkbox>
         </Form.Item>
       </Form>
 
       <section class="todo-subtasks">
         <div class="todo-subtasks__header">
-          <h3>子任务</h3>
+          <h3>{{ $t('todo.detail.subtasks') }}</h3>
           <span>
             {{ activeTask.subtaskCompleted }}/{{ activeTask.subtaskTotal }}
           </span>
@@ -118,7 +128,7 @@ const newSubtaskTitle = defineModel<string>('newSubtaskTitle', {
         <div class="todo-subtasks__new">
           <Input
             v-model:value="newSubtaskTitle"
-            placeholder="新增子任务"
+            :placeholder="$t('todo.detail.newSubtask')"
             @press-enter="emit('createSubtask')"
           />
           <Button @click="emit('createSubtask')">
