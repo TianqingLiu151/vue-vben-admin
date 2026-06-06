@@ -1,11 +1,11 @@
-import type { TodoApi } from '#/api/todo';
-
 import type {
   NavView,
   ResourceType,
   TaskDraft,
   TodoResourceModalState,
 } from '../types';
+
+import type { TodoApi } from '#/api/todo';
 
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { Page } from '@vben/common-ui';
 
-import { baseViews } from './constants';
 import TodoDetailDrawer from './components/todo-detail-drawer.vue';
 import TodoResourceModal from './components/todo-resource-modal.vue';
 import TodoSidebar from './components/todo-sidebar.vue';
 import TodoTaskList from './components/todo-task-list.vue';
 import { useTodoPage } from './composables/use-todo-page';
+import { baseViews } from './constants';
 
 const todo = useTodoPage();
 </script>
@@ -83,32 +83,32 @@ const todo = useTodoPage();
 }
 
 .todo-sidebar {
-  border-right: 1px solid hsl(var(--border));
-  background: hsl(var(--card));
   padding: 18px 14px;
+  background: hsl(var(--card));
+  border-right: 1px solid hsl(var(--border));
 }
 
 .todo-sidebar__header,
 .todo-main__header {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
 }
 
 .todo-sidebar__header h1,
 .todo-main__header h2 {
   margin: 0;
-  color: hsl(var(--foreground));
   font-size: 22px;
   font-weight: 650;
   line-height: 1.25;
+  color: hsl(var(--foreground));
 }
 
 .todo-kicker {
-  color: hsl(var(--muted-foreground));
   font-size: 12px;
   line-height: 1.5;
+  color: hsl(var(--muted-foreground));
 }
 
 .todo-nav-section {
@@ -120,9 +120,9 @@ const todo = useTodoPage();
   align-items: center;
   justify-content: space-between;
   padding: 0 4px 8px;
-  color: hsl(var(--muted-foreground));
   font-size: 12px;
   font-weight: 600;
+  color: hsl(var(--muted-foreground));
 }
 
 .todo-nav {
@@ -134,22 +134,22 @@ const todo = useTodoPage();
 .todo-nav__row,
 .todo-nav__row > button {
   min-height: 36px;
-  border: 0;
   background: transparent;
+  border: 0;
 }
 
 .todo-nav__item,
 .todo-nav__row > button {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
   width: 100%;
   padding: 8px 10px;
-  border-radius: 8px;
-  color: hsl(var(--foreground));
-  cursor: pointer;
   font-size: 14px;
+  color: hsl(var(--foreground));
   text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
 }
 
 .todo-nav__row {
@@ -167,9 +167,9 @@ const todo = useTodoPage();
 }
 
 .todo-dot {
+  flex: 0 0 auto;
   width: 10px;
   height: 10px;
-  flex: 0 0 auto;
   border-radius: 50%;
 }
 
@@ -209,10 +209,10 @@ const todo = useTodoPage();
   gap: 10px;
   align-items: start;
   padding: 12px;
+  cursor: pointer;
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: 8px;
-  background: hsl(var(--card));
-  cursor: pointer;
 }
 
 .todo-task:hover,
@@ -230,10 +230,10 @@ const todo = useTodoPage();
   justify-content: center;
   width: 28px;
   height: 28px;
-  border: 0;
-  background: transparent;
   color: hsl(var(--primary));
   cursor: pointer;
+  background: transparent;
+  border: 0;
 }
 
 .todo-task__content {
@@ -242,11 +242,11 @@ const todo = useTodoPage();
 
 .todo-task__title {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   min-width: 0;
-  color: hsl(var(--foreground));
   font-weight: 600;
+  color: hsl(var(--foreground));
 }
 
 .todo-task__title span:first-child {
@@ -261,14 +261,14 @@ const todo = useTodoPage();
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 6px;
-  color: hsl(var(--muted-foreground));
   font-size: 12px;
+  color: hsl(var(--muted-foreground));
 }
 
 .todo-task__meta span {
   display: inline-flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
 }
 
 .todo-task__meta .is-overdue {
@@ -299,24 +299,24 @@ const todo = useTodoPage();
   width: 100%;
   height: 32px;
   padding: 4px 11px;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
   border: 1px solid #d9d9d9;
   border-radius: 6px;
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
 }
 
 .todo-subtasks {
-  margin-top: 8px;
   padding-top: 16px;
+  margin-top: 8px;
   border-top: 1px solid hsl(var(--border));
 }
 
 .todo-subtasks__header,
 .todo-subtask {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
 }
 
 .todo-subtasks__header h3 {
@@ -346,8 +346,8 @@ const todo = useTodoPage();
   width: 48px;
   height: 32px;
   padding: 0;
-  border: 0;
   background: transparent;
+  border: 0;
 }
 
 @media (max-width: 900px) {

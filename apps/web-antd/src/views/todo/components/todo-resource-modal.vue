@@ -3,11 +3,12 @@ import type { TodoResourceModalState } from '../types';
 
 import { Checkbox, Form, Input, InputNumber, Modal } from 'ant-design-vue';
 
-const model = defineModel<TodoResourceModalState>({ required: true });
-
 const emit = defineEmits<{
   save: [];
 }>();
+
+const model = defineModel<TodoResourceModalState>({ required: true });
+
 </script>
 
 <template>

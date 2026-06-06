@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { TodoApi } from '#/api/todo';
-
 import type { TaskDraft } from '../types';
+
+import type { TodoApi } from '#/api/todo';
 
 import { IconifyIcon } from '@vben/icons';
 
