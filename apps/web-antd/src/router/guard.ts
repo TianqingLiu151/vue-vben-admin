@@ -29,6 +29,13 @@ function hasMenuPath(menus: any[], path: string): boolean {
   });
 }
 
+function hasRoutePath(routes: any[], path: string): boolean {
+  return routes.some((route) => {
+    if (route?.path === path) return true;
+    return route?.children?.length ? hasRoutePath(route.children, path) : false;
+  });
+}
+
 /**
  * 通用守卫配置
  * @param router
@@ -71,6 +78,14 @@ function setupAccessGuard(router: Router) {
 
     // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string)) {
+      if (to.name === 'Profile' && !accessStore.accessToken) {
+        return {
+          path: LOGIN_PATH,
+          query: { redirect: encodeURIComponent(to.fullPath) },
+          replace: true,
+        };
+      }
+
       if (to.path === LOGIN_PATH && accessStore.accessToken) {
         return decodeURIComponent(
           (to.query?.redirect as string) ||
@@ -134,7 +149,9 @@ function setupAccessGuard(router: Router) {
     const fallbackPath =
       getFirstAccessiblePath(accessibleMenus) ||
       preferences.app.defaultHomePath;
-    const targetPath = hasMenuPath(accessibleMenus, redirectPath)
+    const targetPath =
+      hasMenuPath(accessibleMenus, redirectPath) ||
+      hasRoutePath(accessibleRoutes, redirectPath)
       ? redirectPath
       : fallbackPath;
 

@@ -138,6 +138,10 @@ const avatar = computed(() => {
   return userStore.userInfo?.avatar ?? preferences.app.defaultAvatar;
 });
 
+const userDisplayName = computed(() => {
+  return userStore.userInfo?.realName || userStore.userInfo?.username || '';
+});
+
 async function handleLogout() {
   await authStore.logout(false);
 }
@@ -173,7 +177,7 @@ watch(
       await updateWatermark({
         content:
           content ||
-          `${userStore.userInfo?.username} - ${userStore.userInfo?.realName}`,
+          `${userStore.userInfo?.username} - ${userDisplayName.value}`,
       });
     } else {
       destroyWatermark();
@@ -200,7 +204,7 @@ onBeforeMount(() => {
       <UserDropdown
         :avatar
         :menus
-        :text="userStore.userInfo?.realName"
+        :text="userDisplayName"
         description="ann.vben@gmail.com"
         tag-text="Pro"
         trigger="both"
