@@ -31,6 +31,16 @@ const routes: RouteRecordRaw[] = [
           title: $t('page.dashboard.workspace'),
         },
       },
+      {
+        name: 'Todo',
+        path: '/todos',
+        component: () => import('#/views/todo/index.vue'),
+        meta: {
+          fullPathKey: false,
+          icon: 'lucide:list-todo',
+          title: $t('page.todo.title'),
+        },
+      },
     ],
   },
 ];
