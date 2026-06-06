@@ -152,8 +152,8 @@ function setupAccessGuard(router: Router) {
     const targetPath =
       hasMenuPath(accessibleMenus, redirectPath) ||
       hasRoutePath(accessibleRoutes, redirectPath)
-      ? redirectPath
-      : fallbackPath;
+        ? redirectPath
+        : fallbackPath;
 
     return {
       ...router.resolve(targetPath),

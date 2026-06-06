@@ -16,7 +16,7 @@ function pickFirstDefined<T>(...values: T[]) {
   return values.find((value) => value !== undefined && value !== null);
 }
 
-function normalizeUserInfo(raw: UserInfo & Record<string, any>): UserInfo {
+function normalizeUserInfo(raw: Record<string, any> & UserInfo): UserInfo {
   const userInfo = { ...raw };
 
   const realName = pickFirstDefined(
@@ -51,7 +51,7 @@ function normalizeUserInfo(raw: UserInfo & Record<string, any>): UserInfo {
  * 获取用户信息
  */
 export async function getUserInfoApi() {
-  const data = await requestClient.get<UserInfo & Record<string, any>>(
+  const data = await requestClient.get<Record<string, any> & UserInfo>(
     '/user/info',
   );
   return normalizeUserInfo(data);
@@ -61,7 +61,7 @@ export async function getUserInfoApi() {
  * 更新当前登录用户基础资料
  */
 export async function updateUserProfileApi(data: UserProfileUpdateParams) {
-  const resp = await requestClient.put<UserInfo & Record<string, any>>(
+  const resp = await requestClient.put<Record<string, any> & UserInfo>(
     '/user/profile',
     data,
   );
