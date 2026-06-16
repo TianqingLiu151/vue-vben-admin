@@ -16,5 +16,9 @@
   },
   "todo": {
     "title": "Todos"
+  },
+  "table": {
+    "title": "Table Management",
+    "basic": "Basic Table"
   }
 }

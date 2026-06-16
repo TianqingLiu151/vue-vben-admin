@@ -103,19 +103,19 @@ const quickNavItems: WorkbenchQuickNavItem[] = [
     color: '#e18525',
     icon: 'ion:layers-outline',
     title: '组件',
-    url: '/demos/features/icons',
+    url: '/system/user',
   },
   {
     color: '#3fb27f',
     icon: 'ion:settings-outline',
     title: '系统管理',
-    url: '/demos/features/login-expired', // 这里的 URL 是示例，实际项目中需要根据实际情况进行调整
+    url: '/system/menu',
   },
   {
     color: '#4daf1bc9',
     icon: 'ion:key-outline',
     title: '权限管理',
-    url: '/demos/access/page-control',
+    url: '/system/role',
   },
   {
     color: '#00d8ff',
@@ -180,7 +180,7 @@ const trendItems: WorkbenchTrendItem[] = [
     avatar: 'svg:avatar-4',
     content: `发表文章 <a>如何编写一个Vite插件</a> `,
     date: '2天前',
-    title: 'Vben',
+    title: 'Admin',
   },
   {
     avatar: 'svg:avatar-1',
@@ -208,9 +208,9 @@ const trendItems: WorkbenchTrendItem[] = [
   },
   {
     avatar: 'svg:avatar-4',
-    content: `发表文章 <a>如何编写使用 Admin Vben</a> `,
+    content: `发表文章 <a>如何使用后台管理系统</a> `,
     date: '2021-03-01 20:00',
-    title: 'Vben',
+    title: 'Admin',
   },
 ];
 

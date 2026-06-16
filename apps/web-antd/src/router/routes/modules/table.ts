@@ -1,11 +1,13 @@
 import type { RouteRecordRaw } from 'vue-router';
 
+import { $t } from '#/locales';
+
 const routes: RouteRecordRaw[] = [
   {
     meta: {
       icon: 'lucide:table-2',
       order: 20,
-      title: '表格管理',
+      title: $t('table.title'),
     },
     name: 'Table',
     path: '/table',
@@ -13,9 +15,9 @@ const routes: RouteRecordRaw[] = [
       {
         component: () => import('#/views/table/basic/index.vue'),
         meta: {
-          authority: ['demo:table:list'],
+          authority: ['table:list'],
           icon: 'lucide:table-properties',
-          title: '基础表格',
+          title: $t('table.basic'),
         },
         name: 'TableBasic',
         path: '/table/basic',

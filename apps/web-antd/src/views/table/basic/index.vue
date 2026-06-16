@@ -111,11 +111,7 @@ function onRefresh() {
     <FormDrawer @success="onRefresh" />
     <Grid table-title="基础表格">
       <template #toolbar-tools>
-        <Button
-          v-if="can('demo:table:create')"
-          type="primary"
-          @click="onCreate"
-        >
+        <Button v-if="can('table:create')" type="primary" @click="onCreate">
           <Plus class="size-5" />
           新增商品
         </Button>
