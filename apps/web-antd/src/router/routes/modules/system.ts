@@ -52,6 +52,16 @@ const routes: RouteRecordRaw[] = [
         name: 'SystemDept',
         path: '/system/dept',
       },
+      {
+        component: () => import('#/views/system/scheduler/index.vue'),
+        meta: {
+          authority: ['system:scheduler:list'],
+          icon: 'lucide:timer',
+          title: '定时任务',
+        },
+        name: 'SystemScheduler',
+        path: '/system/scheduler',
+      },
     ],
   },
 ];
