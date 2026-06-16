@@ -35,6 +35,7 @@ import {
   runSchedulerJob,
   updateSchedulerJob,
 } from '#/api/system/scheduler';
+import { $t } from '#/locales';
 
 const { hasAccessByCodes } = useAccess();
 
@@ -81,69 +82,69 @@ const editForm = reactive({
   triggerType: 'interval' as TriggerType,
 });
 
-const jobColumns = [
-  { dataIndex: 'name', key: 'name', title: '任务名称', width: 260 },
-  { dataIndex: 'triggerType', key: 'trigger', title: '触发规则', width: 180 },
-  { dataIndex: 'enabled', key: 'enabled', title: '启用状态', width: 120 },
-  { dataIndex: 'lastStatus', key: 'lastStatus', title: '最近状态', width: 120 },
-  { dataIndex: 'lastRunAt', key: 'lastRunAt', title: '上次执行', width: 180 },
-  { dataIndex: 'nextRunAt', key: 'nextRunAt', title: '下次执行', width: 180 },
-  { dataIndex: 'configVersion', key: 'configVersion', title: '配置版本', width: 100 },
-  { key: 'operation', title: '操作', width: 230 },
-];
+const jobColumns = computed(() => [
+  { dataIndex: 'name', key: 'name', title: $t('system.scheduler.name'), width: 260 },
+  { dataIndex: 'triggerType', key: 'trigger', title: $t('system.scheduler.triggerRule'), width: 180 },
+  { dataIndex: 'enabled', key: 'enabled', title: $t('system.scheduler.enabledStatus'), width: 120 },
+  { dataIndex: 'lastStatus', key: 'lastStatus', title: $t('system.scheduler.lastStatus'), width: 120 },
+  { dataIndex: 'lastRunAt', key: 'lastRunAt', title: $t('system.scheduler.lastRunAt'), width: 180 },
+  { dataIndex: 'nextRunAt', key: 'nextRunAt', title: $t('system.scheduler.nextRunAt'), width: 180 },
+  { dataIndex: 'configVersion', key: 'configVersion', title: $t('system.scheduler.configVersion'), width: 100 },
+  { key: 'operation', title: $t('system.scheduler.operation'), width: 230 },
+]);
 
-const logColumns = [
-  { dataIndex: 'startedAt', key: 'startedAt', title: '开始时间', width: 180 },
-  { dataIndex: 'finishedAt', key: 'finishedAt', title: '结束时间', width: 180 },
-  { dataIndex: 'durationMs', key: 'durationMs', title: '耗时', width: 100 },
-  { dataIndex: 'status', key: 'status', title: '状态', width: 100 },
-  { dataIndex: 'message', key: 'message', title: '消息' },
-  { dataIndex: 'error', key: 'error', title: '错误', width: 100 },
-];
+const logColumns = computed(() => [
+  { dataIndex: 'startedAt', key: 'startedAt', title: $t('system.scheduler.startedAt'), width: 180 },
+  { dataIndex: 'finishedAt', key: 'finishedAt', title: $t('system.scheduler.finishedAt'), width: 180 },
+  { dataIndex: 'durationMs', key: 'durationMs', title: $t('system.scheduler.duration'), width: 100 },
+  { dataIndex: 'status', key: 'status', title: $t('system.scheduler.status'), width: 100 },
+  { dataIndex: 'message', key: 'message', title: $t('system.scheduler.message') },
+  { dataIndex: 'error', key: 'error', title: $t('system.scheduler.error'), width: 100 },
+]);
 
-const enabledOptions = [
-  { label: '全部状态', value: 'all' },
-  { label: '启用', value: 'enabled' },
-  { label: '停用', value: 'disabled' },
-];
+const enabledOptions = computed(() => [
+  { label: $t('system.scheduler.allStatus'), value: 'all' },
+  { label: $t('system.scheduler.enabled'), value: 'enabled' },
+  { label: $t('system.scheduler.disabled'), value: 'disabled' },
+]);
 
-const runStatusOptions = [
-  { label: '全部结果', value: 'all' },
-  { label: '成功', value: 'success' },
-  { label: '失败', value: 'failed' },
-  { label: '跳过', value: 'skipped' },
-];
+const runStatusOptions = computed(() => [
+  { label: $t('system.scheduler.allResults'), value: 'all' },
+  { label: $t('system.scheduler.success'), value: 'success' },
+  { label: $t('system.scheduler.failed'), value: 'failed' },
+  { label: $t('system.scheduler.skipped'), value: 'skipped' },
+]);
 
-const triggerOptions = [
-  { label: '间隔执行', value: 'interval' },
-  { label: 'Cron 表达式', value: 'cron' },
-];
+const triggerOptions = computed(() => [
+  { label: $t('system.scheduler.intervalTrigger'), value: 'interval' },
+  { label: $t('system.scheduler.cronTrigger'), value: 'cron' },
+]);
 
-const intervalShortcuts = [
-  { label: '5 秒', value: 5 },
-  { label: '30 秒', value: 30 },
-  { label: '1 分钟', value: 60 },
-  { label: '5 分钟', value: 300 },
-  { label: '10 分钟', value: 600 },
-  { label: '1 小时', value: 3600 },
-];
+const intervalShortcuts = computed(() => [
+  { label: $t('system.scheduler.second5'), value: 5 },
+  { label: $t('system.scheduler.second30'), value: 30 },
+  { label: $t('system.scheduler.minute1'), value: 60 },
+  { label: $t('system.scheduler.minute5'), value: 300 },
+  { label: $t('system.scheduler.minute10'), value: 600 },
+  { label: $t('system.scheduler.hour1'), value: 3600 },
+]);
 
 const editRules = computed<Record<string, any[]>>(() => ({
   cronExpression:
     editForm.triggerType === 'cron'
-      ? [{ message: '请输入 cron 表达式', required: true, trigger: 'blur' }]
+      ? [{ message: $t('system.scheduler.rules.cronExpression'), required: true, trigger: 'blur' }]
       : [],
   intervalSeconds:
     editForm.triggerType === 'interval'
-      ? [{ message: '请输入间隔秒数', required: true, trigger: 'change' }]
+      ? [{ message: $t('system.scheduler.rules.intervalSeconds'), required: true, trigger: 'change' }]
       : [],
-  maxInstances: [{ message: '请输入最大实例数', required: true, trigger: 'change' }],
+  maxInstances: [{ message: $t('system.scheduler.rules.maxInstances'), required: true, trigger: 'change' }],
   misfireGraceSeconds: [
-    { message: '请输入错过触发宽限秒数', required: true, trigger: 'change' },
+    { message: $t('system.scheduler.rules.misfireGraceSeconds'), required: true, trigger: 'change' },
   ],
   name: [
-    { message: '请输入任务名称', required: true, trigger: 'blur' },
-    { max: 100, message: '任务名称最多 100 个字符', trigger: 'blur' },
+    { message: $t('system.scheduler.rules.name'), required: true, trigger: 'blur' },
+    { max: 100, message: $t('system.scheduler.rules.nameMax'), trigger: 'blur' },
   ],
 }));
 
@@ -183,7 +184,7 @@ function formatDuration(value?: number) {
 function triggerText(row: Job | Record<string, any>) {
   const job = row as Job;
   if (job.triggerType === 'interval') {
-    return `每 ${job.intervalSeconds ?? '-'} 秒`;
+    return $t('system.scheduler.everySeconds', [job.intervalSeconds ?? '-']);
   }
 
   return job.cronExpression || '-';
@@ -200,16 +201,16 @@ function statusColor(status?: RunStatus) {
 
 function statusText(status?: RunStatus) {
   const labels: Record<RunStatus, string> = {
-    failed: '失败',
-    skipped: '跳过',
-    success: '成功',
+    failed: $t('system.scheduler.failed'),
+    skipped: $t('system.scheduler.skipped'),
+    success: $t('system.scheduler.success'),
   };
-  return status ? labels[status] : '暂无';
+  return status ? labels[status] : $t('system.scheduler.none');
 }
 
 function getErrorMessage(error: any) {
   const data = error?.response?.data ?? {};
-  return data.detail ?? data.error ?? data.message ?? error?.message ?? '操作失败';
+  return data.detail ?? data.error ?? data.message ?? error?.message ?? $t('system.scheduler.operationFailed');
 }
 
 async function loadJobs(options?: { silent?: boolean }) {
@@ -290,7 +291,7 @@ async function saveJob() {
       name: editForm.name,
       triggerType: editForm.triggerType,
     });
-    message.success('配置已保存，调度进程将在数秒内同步');
+    message.success($t('system.scheduler.saveSuccess'));
     editOpen.value = false;
     await loadJobs();
   } catch (error) {
@@ -315,8 +316,11 @@ async function toggleJob(row: Job | Record<string, any>, checkedValue: unknown) 
   const job = row as Job;
   const checked = checkedValue === true;
   const confirmed = await confirmAction(
-    checked ? '启用任务' : '停用任务',
-    `确认${checked ? '启用' : '停用'}任务「${job.name}」吗？`,
+    checked ? $t('system.scheduler.enableJob') : $t('system.scheduler.disableJob'),
+    $t('system.scheduler.toggleConfirm', [
+      checked ? $t('system.scheduler.enabled') : $t('system.scheduler.disabled'),
+      job.name,
+    ]),
   );
   if (!confirmed) return;
 
@@ -326,7 +330,9 @@ async function toggleJob(row: Job | Record<string, any>, checkedValue: unknown) 
       : await disableSchedulerJob(job.code);
     Object.assign(job, updated);
     if (!checked) job.nextRunAt = undefined;
-    message.success(checked ? '任务已启用' : '任务已停用');
+    message.success(
+      checked ? $t('system.scheduler.enableSuccess') : $t('system.scheduler.disableSuccess'),
+    );
   } catch (error) {
     message.error(getErrorMessage(error));
   }
@@ -335,15 +341,15 @@ async function toggleJob(row: Job | Record<string, any>, checkedValue: unknown) 
 async function runJob(row: Job | Record<string, any>) {
   const job = row as Job;
   const confirmed = await confirmAction(
-    '立即执行任务',
-    `确认立即执行任务「${job.name}」吗？`,
+    $t('system.scheduler.runJob'),
+    $t('system.scheduler.runConfirm', [job.name]),
   );
   if (!confirmed) return;
 
   runningCode.value = job.code;
   try {
     await runSchedulerJob(job.code);
-    message.success('任务已执行');
+    message.success($t('system.scheduler.runSuccess'));
     await loadJobs();
     if (activeJob.value?.code === job.code) {
       logsPage.value = 1;
@@ -371,7 +377,7 @@ function showError(error?: string) {
   if (!error) return;
   Modal.info({
     content: h('pre', { class: 'scheduler-error-detail' }, error),
-    title: '错误详情',
+    title: $t('system.scheduler.errorDetail'),
     width: 720,
   });
 }
@@ -417,7 +423,7 @@ onBeforeUnmount(stopTimers);
         <Space wrap>
           <Button :loading="loading" @click="loadJobs()">
             <IconifyIcon icon="lucide:refresh-cw" />
-            刷新
+            {{ $t('system.scheduler.refresh') }}
           </Button>
           <Select
             v-model:value="enabledFilter"
@@ -433,13 +439,13 @@ onBeforeUnmount(stopTimers);
             v-model:value="keyword"
             allow-clear
             class="scheduler-keyword"
-            placeholder="搜索任务编码或名称"
+            :placeholder="$t('system.scheduler.keywordPlaceholder')"
           >
             <template #prefix>
               <IconifyIcon icon="lucide:search" />
             </template>
           </Input>
-          <Button @click="resetFilters">重置</Button>
+          <Button @click="resetFilters">{{ $t('system.scheduler.reset') }}</Button>
         </Space>
       </div>
 
@@ -451,7 +457,7 @@ onBeforeUnmount(stopTimers);
           current: page,
           pageSize,
           showSizeChanger: true,
-          showTotal: (value: number) => `共 ${value} 条`,
+          showTotal: (value: number) => $t('system.scheduler.total', [value]),
           total: keyword || enabledFilter !== 'all' || statusFilter !== 'all'
             ? filteredJobs.length
             : total,
@@ -477,12 +483,16 @@ onBeforeUnmount(stopTimers);
             <Switch
               v-if="can('system:scheduler:update')"
               :checked="record.enabled"
-              checked-children="启用"
-              un-checked-children="停用"
+              :checked-children="$t('system.scheduler.enabled')"
+              :un-checked-children="$t('system.scheduler.disabled')"
               @change="(checked) => toggleJob(record, checked)"
             />
             <Tag v-else :color="record.enabled ? 'success' : 'default'">
-              {{ record.enabled ? '启用' : '停用' }}
+              {{
+                record.enabled
+                  ? $t('system.scheduler.enabled')
+                  : $t('system.scheduler.disabled')
+              }}
             </Tag>
           </template>
 
@@ -512,10 +522,10 @@ onBeforeUnmount(stopTimers);
                 type="link"
                 @click="openEdit(record)"
               >
-                编辑
+                {{ $t('system.scheduler.edit') }}
               </Button>
               <Button size="small" type="link" @click="openLogs(record)">
-                日志
+                {{ $t('system.scheduler.logs') }}
               </Button>
               <Button
                 v-if="can('system:scheduler:run')"
@@ -524,7 +534,7 @@ onBeforeUnmount(stopTimers);
                 type="link"
                 @click="runJob(record)"
               >
-                执行
+                {{ $t('system.scheduler.run') }}
               </Button>
             </Space>
           </template>
@@ -536,7 +546,7 @@ onBeforeUnmount(stopTimers);
       v-model:open="editOpen"
       :destroy-on-close="false"
       :width="520"
-      title="编辑定时任务"
+      :title="$t('system.scheduler.editTitle')"
     >
       <Form
         ref="editFormRef"
@@ -544,13 +554,13 @@ onBeforeUnmount(stopTimers);
         :rules="editRules"
         layout="vertical"
       >
-        <Form.Item label="任务编码">
+        <Form.Item :label="$t('system.scheduler.code')">
           <Input :value="activeJob?.code" disabled />
         </Form.Item>
-        <Form.Item label="任务名称" name="name">
+        <Form.Item :label="$t('system.scheduler.name')" name="name">
           <Input v-model:value="editForm.name" :maxlength="100" />
         </Form.Item>
-        <Form.Item label="描述" name="description">
+        <Form.Item :label="$t('system.scheduler.description')" name="description">
           <Textarea
             v-model:value="editForm.description"
             :maxlength="500"
@@ -558,7 +568,7 @@ onBeforeUnmount(stopTimers);
             show-count
           />
         </Form.Item>
-        <Form.Item label="触发类型" name="triggerType">
+        <Form.Item :label="$t('system.scheduler.triggerType')" name="triggerType">
           <RadioGroup
             v-model:value="editForm.triggerType"
             :options="triggerOptions"
@@ -568,7 +578,7 @@ onBeforeUnmount(stopTimers);
         </Form.Item>
         <Form.Item
           v-if="editForm.triggerType === 'interval'"
-          label="间隔秒数"
+          :label="$t('system.scheduler.intervalSeconds')"
           name="intervalSeconds"
         >
           <InputNumber
@@ -589,9 +599,9 @@ onBeforeUnmount(stopTimers);
         </Form.Item>
         <Form.Item
           v-else
-          label="Cron 表达式"
+          :label="$t('system.scheduler.cronExpression')"
           name="cronExpression"
-          extra="格式：minute hour day month day_of_week，例如 0 2 * * * 表示每天 02:00。"
+          :extra="$t('system.scheduler.cronHelp')"
         >
           <Input
             v-model:value="editForm.cronExpression"
@@ -599,25 +609,28 @@ onBeforeUnmount(stopTimers);
           />
         </Form.Item>
         <div class="scheduler-form-grid">
-          <Form.Item label="启用任务" name="enabled">
+          <Form.Item :label="$t('system.scheduler.enableJob')" name="enabled">
             <Switch
               v-model:checked="editForm.enabled"
-              checked-children="启用"
-              un-checked-children="停用"
+              :checked-children="$t('system.scheduler.enabled')"
+              :un-checked-children="$t('system.scheduler.disabled')"
             />
           </Form.Item>
-          <Form.Item label="合并错过触发" name="coalesce">
+          <Form.Item :label="$t('system.scheduler.coalesce')" name="coalesce">
             <Switch v-model:checked="editForm.coalesce" />
           </Form.Item>
         </div>
-        <Form.Item label="最大实例数" name="maxInstances">
+        <Form.Item :label="$t('system.scheduler.maxInstances')" name="maxInstances">
           <InputNumber
             v-model:value="editForm.maxInstances"
             :min="1"
             class="scheduler-full"
           />
         </Form.Item>
-        <Form.Item label="错过触发宽限秒数" name="misfireGraceSeconds">
+        <Form.Item
+          :label="$t('system.scheduler.misfireGraceSeconds')"
+          name="misfireGraceSeconds"
+        >
           <InputNumber
             v-model:value="editForm.misfireGraceSeconds"
             :min="1"
@@ -628,9 +641,11 @@ onBeforeUnmount(stopTimers);
 
       <template #footer>
         <Space>
-          <Button @click="editOpen = false">取消</Button>
+          <Button @click="editOpen = false">
+            {{ $t('system.scheduler.cancel') }}
+          </Button>
           <Button :loading="saving" type="primary" @click="saveJob">
-            保存
+            {{ $t('system.scheduler.save') }}
           </Button>
         </Space>
       </template>
@@ -640,7 +655,7 @@ onBeforeUnmount(stopTimers);
       v-model:open="logsOpen"
       :destroy-on-close="false"
       :width="840"
-      title="执行日志"
+      :title="$t('system.scheduler.executionLogs')"
     >
       <div v-if="activeJob" class="scheduler-log-title">
         <div>{{ activeJob.name }}</div>
@@ -655,7 +670,7 @@ onBeforeUnmount(stopTimers);
           current: logsPage,
           pageSize: logsPageSize,
           showSizeChanger: true,
-          showTotal: (value: number) => `共 ${value} 条`,
+          showTotal: (value: number) => $t('system.scheduler.total', [value]),
           total: logsTotal,
         }"
         row-key="id"
@@ -688,7 +703,7 @@ onBeforeUnmount(stopTimers);
               type="link"
               @click="showError(record.error)"
             >
-              查看
+              {{ $t('system.scheduler.view') }}
             </Button>
             <span v-else>-</span>
           </template>

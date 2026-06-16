@@ -57,7 +57,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           authority: ['system:scheduler:list'],
           icon: 'lucide:timer',
-          title: '定时任务',
+          title: $t('system.scheduler.title'),
         },
         name: 'SystemScheduler',
         path: '/system/scheduler',
