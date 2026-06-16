@@ -1,157 +1,82 @@
-<div align="center">
-  <a href="https://github.com/anncwb/vue-vben-admin">
-    <img alt="VbenAdmin Logo" width="215" src="https://unpkg.com/@vbenjs/static-source@0.1.7/source/logo-v1.webp">
-  </a>
-  <br>
-  <br>
+# Enterprise Admin
 
-[![license](https://img.shields.io/github/license/anncwb/vue-vben-admin.svg)](LICENSE)
+企业级后台管理前端基础架子，基于 Vue 3、Vite、TypeScript、Pinia、Vue Router、Ant Design Vue 和 monorepo workspace 组织。
 
-  <h1>Vue Vben Admin</h1>
-</div>
+## 功能范围
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vbenjs_vue-vben-admin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vbenjs_vue-vben-admin) ![codeql](https://github.com/vbenjs/vue-vben-admin/actions/workflows/codeql.yml/badge.svg) ![build](https://github.com/vbenjs/vue-vben-admin/actions/workflows/build.yml/badge.svg) ![ci](https://github.com/vbenjs/vue-vben-admin/actions/workflows/ci.yml/badge.svg) ![deploy](https://github.com/vbenjs/vue-vben-admin/actions/workflows/deploy.yml/badge.svg)
+- 登录、退出、用户信息与 token 刷新流程
+- 后端菜单模式与按钮权限码控制
+- 系统管理基础页面：用户、角色、菜单、部门
+- 表格 CRUD 模板
+- 工作台、分析页、待办页面
+- 主题、布局、标签页、国际化、全局偏好设置
+- Mock 服务用于本地联调和前端独立开发
+- CI、CodeQL、Docker/Nginx 部署基础配置
 
-**中文** | [English](./README.md) | [日本語](./README.ja-JP.md)
+## 环境要求
 
-## 简介
+- Node.js `^20.19.0 || ^22.18.0 || ^24.0.0`
+- pnpm `>=10.0.0`
 
-Vue Vben Admin 是 Vue Vben Admin 的升级版本。作为一个免费开源的中后台模板，它采用了最新的 Vue 3、Vite、TypeScript 等主流技术开发，开箱即用，可用于中后台前端开发，也适合学习参考。
-
-## 升级提示
-
-该版本为最新版本 `5.0`，与其他版本不兼容，如果你是新项目，建议使用最新版本。如果你想查看旧版本，请使用 [v2 分支](https://github.com/vbenjs/vue-vben-admin/tree/v2)
-
-## 特性
-
-- **最新技术栈**：使用 Vue3/vite 等前端前沿技术开发
-- **TypeScript**：应用程序级 JavaScript 的语言
-- **主题**：提供多套主题色彩，可配置自定义主题
-- **国际化**：内置完善的国际化方案
-- **权限**：内置完善的动态路由权限生成方案
-
-## 预览
-
-- [Vben Admin](https://vben.pro/) - 完整版中文站点
-
-测试账号：vben/123456
-
-<div align="center">
-  <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview1.png">
-  <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview2.png">
-  <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview3.png">
-</div>
-
-### 使用 Gitpod
-
-在 Gitpod（适用于 GitHub 的免费在线开发环境）中打开项目，并立即开始编码。
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vbenjs/vue-vben-admin)
-
-## 文档
-
-[文档地址](https://doc.vben.pro/)
-
-## 安装使用
-
-1. 获取项目代码
+## 常用命令
 
 ```bash
-git clone https://github.com/vbenjs/vue-vben-admin.git
-```
-
-2. 安装依赖
-
-```bash
-cd vue-vben-admin
-npm i -g corepack
 pnpm install
+pnpm dev:web
+pnpm run typecheck --filter=@vben/web-antd
+pnpm run build:web
 ```
 
-3. 运行
+## 目录结构
+
+```text
+apps/
+  web-antd/       主前端应用
+  backend-mock/   本地 mock 服务
+internal/         工程化配置、构建配置、lint 配置
+packages/         基础组件、布局、请求、权限、状态、工具包
+scripts/          项目脚本与 Docker 部署配置
+```
+
+## 环境变量
+
+主应用环境变量位于 `apps/web-antd/.env*`：
+
+- `VITE_APP_TITLE`：应用标题
+- `VITE_APP_NAMESPACE`：本地缓存命名空间
+- `VITE_APP_STORE_SECURE_KEY`：本地持久化加密 key
+- `VITE_GLOB_API_URL`：接口基础地址
+- `VITE_NITRO_MOCK`：是否启用本地 mock 服务
+
+Mock 服务环境变量位于 `apps/backend-mock/.env`：
+
+- `ACCESS_TOKEN_SECRET`
+- `REFRESH_TOKEN_SECRET`
+
+生产环境请使用真实后端地址和独立密钥。
+
+## 权限模型
+
+当前应用默认使用后端菜单模式。登录后前端通过接口获取：
+
+- 用户信息
+- 菜单树
+- 按钮权限码
+
+路由组件路径需要与 `apps/web-antd/src/views` 下的页面路径对应，例如 `/system/user/list`。
+
+## 部署
+
+本地构建：
 
 ```bash
-pnpm dev
+pnpm run build:web
 ```
 
-4. 打包
+Docker 构建：
 
 ```bash
-pnpm build
+bash scripts/deploy/build-local-docker-image.sh
 ```
 
-## 更新日志
-
-[CHANGELOG](https://github.com/vbenjs/vue-vben-admin/releases)
-
-## 如何贡献
-
-非常欢迎你的加入！[提一个 Issue](https://github.com/anncwb/vue-vben-admin/issues/new/choose) 或者提交一个 Pull Request。
-
-**Pull Request 流程：**
-
-1. Fork 代码
-2. 创建自己的分支：`git checkout -b feature/xxxx`
-3. 提交你的修改：`git commit -am 'feat(function): add xxxxx'`
-4. 推送您的分支：`git push origin feature/xxxx`
-5. 提交 `pull request`
-
-## Git 贡献提交规范
-
-参考 [vue](https://github.com/vuejs/vue/blob/dev/.github/COMMIT_CONVENTION.md) 规范 ([Angular](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular))
-
-- `feat` 增加新功能
-- `fix` 修复问题/BUG
-- `style` 代码风格相关无影响运行结果的
-- `perf` 优化/性能提升
-- `refactor` 重构
-- `revert` 撤销修改
-- `test` 测试相关
-- `docs` 文档/注释
-- `chore` 依赖更新/脚手架配置修改等
-- `ci` 持续集成
-- `types` 类型定义文件更改
-
-## 浏览器支持
-
-本地开发推荐使用 `Chrome 80+` 浏览器
-
-支持现代浏览器，不支持 IE
-
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
-| :-: | :-: | :-: | :-: |
-| last 2 versions | last 2 versions | last 2 versions | last 2 versions |
-
-## 维护者
-
-[@Vben](https://github.com/anncwb)
-
-## Star 历史
-
-[![Star History Chart](https://api.star-history.com/svg?repos=vbenjs/vue-vben-admin&type=Date)](https://star-history.com/#vbenjs/vue-vben-admin&Date)
-
-## 捐赠
-
-如果你觉得这个项目对你有帮助，你可以帮作者买一杯咖啡表示支持！
-
-![donate](https://unpkg.com/@vbenjs/static-source@0.1.7/source/sponsor.png)
-
-<a style="display: block;width: 100px;height: 50px;line-height: 50px; color: #fff;text-align: center; background: #408aed;border-radius: 4px;" href="https://www.paypal.com/paypalme/cvvben">Paypal Me</a>
-
-## 贡献者
-
-<a href="https://openomy.app/github/vbenjs/vue-vben-admin" target="_blank" style="display: block; width: 100%;" align="center">
-  <img src="https://openomy.app/svg?repo=vbenjs/vue-vben-admin&chart=bubble&latestMonth=3" target="_blank" alt="Contribution Leaderboard" style="display: block; width: 100%;" />
- </a>
-
-<a href="https://github.com/vbenjs/vue-vben-admin/graphs/contributors">
-  <img alt="Contributors" src="https://contrib.rocks/image?repo=vbenjs/vue-vben-admin" />
-</a>
-
-## Discord
-
-- [Github Discussions](https://github.com/anncwb/vue-vben-admin/discussions)
-
-## 许可证
-
-[MIT © Vben-2020](./LICENSE)
+构建产物位于 `apps/web-antd/dist`。

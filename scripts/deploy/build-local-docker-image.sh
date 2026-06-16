@@ -3,7 +3,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 LOG_FILE=${SCRIPT_DIR}/build-local-docker-image.log
 ERROR=""
-IMAGE_NAME="vben-admin-local"
+IMAGE_NAME="enterprise-admin-local"
 
 function stop_and_remove_container() {
     # Stop and remove the existing container
@@ -13,18 +13,12 @@ function stop_and_remove_container() {
 
 function remove_image() {
     # Remove the existing image
-    docker rmi vben-admin-pro >/dev/null 2>&1
-}
-
-function install_dependencies() {
-    # Install all dependencies
-    cd ${SCRIPT_DIR}
-    pnpm install || ERROR="install_dependencies failed"
+    docker rmi ${IMAGE_NAME} >/dev/null 2>&1
 }
 
 function build_image() {
     # build docker
-    docker build ../../ -f Dockerfile -t ${IMAGE_NAME} || ERROR="build_image failed"
+    docker build "${SCRIPT_DIR}/../.." -f "${SCRIPT_DIR}/Dockerfile" -t ${IMAGE_NAME} || ERROR="build_image failed"
 }
 
 function log_message() {
@@ -34,7 +28,7 @@ function log_message() {
         >&2 echo "ERROR: ${ERROR}"
         exit 1
     else
-        echo "docker image with tag '${IMAGE_NAME}' built sussessfully. Use below sample command to run the container"
+        echo "docker image with tag '${IMAGE_NAME}' built successfully. Use below sample command to run the container"
         echo ""
         echo "docker run -d -p 8010:8080 --name ${IMAGE_NAME} ${IMAGE_NAME}"
     fi
@@ -43,9 +37,6 @@ function log_message() {
 echo "Info: Stopping and removing existing container and image" | tee ${LOG_FILE}
 stop_and_remove_container
 remove_image
-
-echo "Info: Installing dependencies" | tee -a ${LOG_FILE}
-install_dependencies 1>> ${LOG_FILE} 2>> ${LOG_FILE}
 
 if [[ ${ERROR} == "" ]]; then
     echo "Info: Building docker image" | tee -a ${LOG_FILE}

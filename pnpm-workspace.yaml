@@ -10,7 +10,6 @@ packages:
   - packages/business/*
   - apps/*
   - scripts/*
-  - docs
 
 overrides:
   '@ast-grep/napi': 'catalog:'
@@ -38,7 +37,6 @@ catalog:
   '@intlify/unplugin-vue-i18n': ^11.0.7
   '@jspm/generator': ^2.12.0
   '@manypkg/get-packages': ^3.1.0
-  '@nolebase/vitepress-plugin-git-changelog': ^2.18.2
   '@playwright/test': ^1.58.2
   '@pnpm/workspace.read-manifest': ^1000.3.0
   '@stylistic/stylelint-plugin': ^5.0.1
@@ -60,7 +58,6 @@ catalog:
   '@typescript-eslint/eslint-plugin': ^8.57.1
   '@typescript-eslint/parser': ^8.57.1
   '@vee-validate/zod': ^4.15.1
-  '@vite-pwa/vitepress': ^1.1.0
   '@vitejs/plugin-vue': ^6.0.5
   '@vitejs/plugin-vue-jsx': ^5.1.5
   '@vue/shared': ^3.5.30
@@ -116,7 +113,6 @@ catalog:
   lefthook: ^2.1.4
   lodash.clonedeep: ^4.5.0
   lucide-vue-next: ^0.577.0
-  medium-zoom: ^1.1.0
   naive-ui: ^2.44.1
   nitropack: ^2.13.2
   nprogress: ^0.2.0
@@ -170,8 +166,6 @@ catalog:
   vite-plugin-lazy-import: ^1.0.7
   vite-plugin-pwa: ^1.2.0
   vite-plugin-vue-devtools: ^8.1.0
-  vitepress: ^1.6.4
-  vitepress-plugin-group-icons: ^1.7.1
   vitest: ^4.1.0
   vue: ^3.5.30
   vue-eslint-parser: ^10.4.0

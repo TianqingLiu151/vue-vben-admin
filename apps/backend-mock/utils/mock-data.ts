@@ -15,14 +15,14 @@ export interface TimezoneOption {
 export const MOCK_USERS: UserInfo[] = [
   {
     id: 0,
-    password: '123456',
-    realName: 'Vben',
+    password: 'Admin@123',
+    realName: 'Super Admin',
     roles: ['super'],
-    username: 'vben',
+    username: 'super_admin',
   },
   {
     id: 1,
-    password: '123456',
+    password: 'Admin@123',
     realName: 'Admin',
     roles: ['admin'],
     username: 'admin',
@@ -30,10 +30,10 @@ export const MOCK_USERS: UserInfo[] = [
   },
   {
     id: 2,
-    password: '123456',
-    realName: 'Jack',
+    password: 'User@123',
+    realName: 'Operator',
     roles: ['user'],
-    username: 'jack',
+    username: 'operator',
     homePath: '/analytics',
   },
 ];
@@ -50,7 +50,7 @@ export const MOCK_CODES = [
       'table:list',
       'table:create',
     ],
-    username: 'vben',
+    username: 'super_admin',
   },
   {
     // admin
@@ -68,7 +68,7 @@ export const MOCK_CODES = [
   {
     // user
     codes: ['system:user:list', 'table:list'],
-    username: 'jack',
+    username: 'operator',
   },
 ];
 
@@ -184,7 +184,7 @@ const tableMenus = [
 export const MOCK_MENUS = [
   {
     menus: [...dashboardMenus, ...systemMenus, ...tableMenus],
-    username: 'vben',
+    username: 'super_admin',
   },
   {
     menus: [...dashboardMenus, ...systemMenus, ...tableMenus],
@@ -192,7 +192,7 @@ export const MOCK_MENUS = [
   },
   {
     menus: [...dashboardMenus, ...tableMenus],
-    username: 'jack',
+    username: 'operator',
   },
 ];
 

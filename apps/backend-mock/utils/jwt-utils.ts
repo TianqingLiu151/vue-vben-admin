@@ -7,9 +7,14 @@ import jwt from 'jsonwebtoken';
 
 import { MOCK_USERS } from './mock-data';
 
-// TODO: Replace with your own secret key
-const ACCESS_TOKEN_SECRET = 'access_token_secret';
-const REFRESH_TOKEN_SECRET = 'refresh_token_secret';
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
+if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
+  throw new Error(
+    'Missing ACCESS_TOKEN_SECRET or REFRESH_TOKEN_SECRET for mock server.',
+  );
+}
 
 export interface UserPayload extends UserInfo {
   iat: number;
