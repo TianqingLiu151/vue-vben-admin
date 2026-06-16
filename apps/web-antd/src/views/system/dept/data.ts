@@ -68,6 +68,7 @@ export function useSchema(): VbenFormSchema[] {
 
 export function useColumns(
   onActionClick?: OnActionClickFn<SystemDeptApi.SystemDept>,
+  can?: (code: string) => boolean,
 ): VxeTableGridColumns<SystemDeptApi.SystemDept> {
   return [
     {
@@ -104,12 +105,20 @@ export function useColumns(
         },
         name: 'CellOperation',
         options: [
-          { code: 'append', text: '新增下级' },
-          'edit',
+          {
+            code: 'append',
+            show: () => can?.('system:dept:create') ?? true,
+            text: '新增下级',
+          },
+          {
+            code: 'edit',
+            show: () => can?.('system:dept:update') ?? true,
+          },
           {
             code: 'delete',
             disabled: (row: SystemDeptApi.SystemDept) =>
               !!(row.children && row.children.length > 0),
+            show: () => can?.('system:dept:delete') ?? true,
           },
         ],
       },

@@ -83,7 +83,10 @@ export function useGridFormSchema(): VbenFormSchema[] {
 export function useColumns<T = SystemRoleApi.SystemRole>(
   onActionClick: OnActionClickFn<T>,
   onStatusChange?: (newStatus: any, row: T) => PromiseLike<boolean | undefined>,
+  can?: (code: string) => boolean,
 ): VxeTableGridColumns {
+  const canUpdate = can?.('system:role:update') ?? true;
+
   return [
     {
       field: 'name',
@@ -97,8 +100,8 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
     },
     {
       cellRender: {
-        attrs: { beforeChange: onStatusChange },
-        name: onStatusChange ? 'CellSwitch' : 'CellTag',
+        attrs: { beforeChange: canUpdate ? onStatusChange : undefined },
+        name: onStatusChange && canUpdate ? 'CellSwitch' : 'CellTag',
       },
       field: 'status',
       title: $t('system.role.status'),
@@ -123,6 +126,16 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
           onClick: onActionClick,
         },
         name: 'CellOperation',
+        options: [
+          {
+            code: 'edit',
+            show: () => canUpdate,
+          },
+          {
+            code: 'delete',
+            show: () => can?.('system:role:delete') ?? true,
+          },
+        ],
       },
       field: 'operation',
       fixed: 'right',

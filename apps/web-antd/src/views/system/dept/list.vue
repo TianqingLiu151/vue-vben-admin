@@ -5,6 +5,7 @@ import type {
 } from '#/adapter/vxe-table';
 import type { SystemDeptApi } from '#/api/system/dept';
 
+import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
@@ -16,6 +17,8 @@ import { $t } from '#/locales';
 
 import { useColumns } from './data';
 import Form from './modules/form.vue';
+
+const { hasAccessByCodes } = useAccess();
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
@@ -91,10 +94,14 @@ function onActionClick({
   }
 }
 
+function can(code: string) {
+  return hasAccessByCodes([code]);
+}
+
 const [Grid, gridApi] = useVbenVxeGrid({
   gridEvents: {},
   gridOptions: {
-    columns: useColumns(onActionClick),
+    columns: useColumns(onActionClick, can),
     height: 'auto',
     keepSource: true,
     pagerConfig: {
@@ -133,7 +140,11 @@ function refreshGrid() {
     <FormModal @success="refreshGrid" />
     <Grid :table-title="$t('system.dept.list')">
       <template #toolbar-tools>
-        <Button type="primary" @click="onCreate">
+        <Button
+          v-if="can('system:dept:create')"
+          type="primary"
+          @click="onCreate"
+        >
           <Plus class="size-5" />
           {{ $t('ui.actionTitle.create', [$t('system.dept.name')]) }}
         </Button>

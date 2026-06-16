@@ -23,6 +23,7 @@ export function getMenuTypeOptions() {
 
 export function useColumns(
   onActionClick: OnActionClickFn<SystemMenuApi.SystemMenu>,
+  can: (code: string) => boolean,
 ): VxeTableGridColumns<SystemMenuApi.SystemMenu> {
   return [
     {
@@ -77,7 +78,21 @@ export function useColumns(
           onClick: onActionClick,
         },
         name: 'CellOperation',
-        options: [{ code: 'append', text: '新增下级' }, 'edit', 'delete'],
+        options: [
+          {
+            code: 'append',
+            show: () => can('system:menu:create'),
+            text: '新增下级',
+          },
+          {
+            code: 'edit',
+            show: () => can('system:menu:update'),
+          },
+          {
+            code: 'delete',
+            show: () => can('system:menu:delete'),
+          },
+        ],
       },
       field: 'operation',
       fixed: 'right',

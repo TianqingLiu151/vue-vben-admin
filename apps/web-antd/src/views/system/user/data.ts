@@ -103,6 +103,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 
 export function useColumns(
   onActionClick: OnActionClickFn<SystemUserApi.SystemUser>,
+  can: (code: string) => boolean,
 ): VxeTableGridColumns<SystemUserApi.SystemUser> {
   return [
     {
@@ -147,6 +148,16 @@ export function useColumns(
           onClick: onActionClick,
         },
         name: 'CellOperation',
+        options: [
+          {
+            code: 'edit',
+            show: () => can('system:user:update'),
+          },
+          {
+            code: 'delete',
+            show: () => can('system:user:delete'),
+          },
+        ],
       },
       field: 'operation',
       fixed: 'right',
