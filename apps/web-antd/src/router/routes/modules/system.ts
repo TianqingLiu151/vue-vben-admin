@@ -53,6 +53,16 @@ const routes: RouteRecordRaw[] = [
         path: '/system/dept',
       },
       {
+        component: () => import('#/views/system/dict/list.vue'),
+        meta: {
+          authority: ['system:dict:list'],
+          icon: 'lucide:book-open',
+          title: $t('system.dict.title'),
+        },
+        name: 'SystemDict',
+        path: '/system/dict',
+      },
+      {
         component: () => import('#/views/system/scheduler/index.vue'),
         meta: {
           authority: ['system:scheduler:list'],
