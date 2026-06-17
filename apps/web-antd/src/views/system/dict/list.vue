@@ -483,7 +483,7 @@ onMounted(() => {
     <div class="dict-page">
       <div class="dict-pane dict-type-pane">
         <div class="dict-toolbar">
-          <Space wrap>
+          <Space class="dict-toolbar-filters" wrap>
             <Input
               v-model:value="typeFilters.name"
               allow-clear
@@ -515,6 +515,7 @@ onMounted(() => {
           </Space>
           <Button
             v-if="can('system:dict:create')"
+            class="dict-toolbar-action"
             type="primary"
             @click="openCreateType"
           >
@@ -609,7 +610,7 @@ onMounted(() => {
 
         <template v-if="selectedType">
           <div class="dict-toolbar">
-            <Space wrap>
+            <Space class="dict-toolbar-filters" wrap>
               <Input
                 v-model:value="itemFilters.label"
                 allow-clear
@@ -878,9 +879,25 @@ onMounted(() => {
 .dict-item-header {
   display: flex;
   gap: 12px;
-  align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+}
+
+.dict-toolbar {
+  align-items: flex-start;
+}
+
+.dict-item-header {
+  align-items: center;
+}
+
+.dict-toolbar-filters {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dict-toolbar-action {
+  flex: 0 0 auto;
 }
 
 .dict-filter {
