@@ -273,8 +273,8 @@ function detailItemValue(value?: number | string) {
 }
 
 function getErrorMessage(error: any) {
-  const data = error?.response?.data ?? {};
-  return data.detail ?? data.error ?? data.message ?? error?.message ?? '操作失败';
+  const data = error?.response?.data ?? error?.data ?? error ?? {};
+  return data.message ?? data.detail ?? data.error ?? error?.message ?? '操作失败';
 }
 
 async function copyText(value?: number | string) {

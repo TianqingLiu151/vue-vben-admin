@@ -130,8 +130,8 @@ function getNodeClass(node: Recordable<any>) {
 
 function showDataScopeError(error?: any) {
   const status = error?.response?.status;
-  const responseData = error?.response?.data ?? {};
-  const errorMessage = responseData?.error ?? responseData?.message ?? '';
+  const responseData = error?.response?.data ?? error?.data ?? error ?? {};
+  const errorMessage = responseData?.message ?? responseData?.error ?? '';
 
   if (status === 403 && errorMessage.includes('all')) {
     message.error('只有超级管理员可以授予全部数据范围');

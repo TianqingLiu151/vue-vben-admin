@@ -140,8 +140,8 @@ function toOptionalString(value?: string) {
 
 function showDataScopeError(error: any) {
   const status = error?.response?.status;
-  const responseData = error?.response?.data ?? {};
-  const errorMessage = responseData?.error ?? responseData?.message ?? '';
+  const responseData = error?.response?.data ?? error?.data ?? error ?? {};
+  const errorMessage = responseData?.message ?? responseData?.error ?? '';
 
   if (status === 400 && errorMessage.includes('Unknown department')) {
     message.error('部门不存在或已被删除');

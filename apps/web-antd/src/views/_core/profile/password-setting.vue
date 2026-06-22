@@ -70,8 +70,8 @@ async function handleSubmit(values: Recordable<any>) {
     message.success('密码修改成功，请重新登录');
     await authStore.logout(false);
   } catch (error: any) {
-    const responseData = error?.response?.data ?? {};
-    const errorMessage = responseData?.error ?? responseData?.message ?? '';
+    const responseData = error?.response?.data ?? error?.data ?? error ?? {};
+    const errorMessage = responseData?.message ?? responseData?.error ?? '';
     if (
       error?.response?.status === 400 &&
       errorMessage === 'Old password is incorrect'

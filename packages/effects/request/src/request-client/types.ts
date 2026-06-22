@@ -75,11 +75,51 @@ interface HttpResponse<T = any> {
   code: number;
   data: T;
   message: string;
+  traceId?: string;
+}
+
+interface ApiResponse<T = unknown> {
+  code: number;
+  data: T;
+  message: string;
+  traceId?: string;
+}
+
+interface PageData<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
+
+interface ValidationErrorItem {
+  field: string;
+  message: string;
+  type?: string;
+}
+
+interface ValidationErrorData {
+  errors: ValidationErrorItem[];
+}
+
+interface BatchFailedItem {
+  code: number;
+  id: number | string;
+  message: string;
+}
+
+interface BatchResult {
+  failedItems: BatchFailedItem[];
+  successIds: Array<number | string>;
 }
 
 export type {
+  ApiResponse,
+  BatchFailedItem,
+  BatchResult,
   HttpResponse,
   MakeErrorMessageFn,
+  PageData,
   RequestClientConfig,
   RequestClientOptions,
   RequestContentType,
@@ -87,4 +127,6 @@ export type {
   RequestResponse,
   ResponseInterceptorConfig,
   SseRequestOptions,
+  ValidationErrorData,
+  ValidationErrorItem,
 };

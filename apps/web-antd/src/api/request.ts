@@ -1,7 +1,8 @@
-/**
- * 该文件可自行根据业务逻辑进行调整
- */
-import type { AxiosResponseHeaders, RequestClientOptions } from '@vben/request';
+import type {
+  ApiResponse,
+  AxiosResponseHeaders,
+  RequestClientOptions,
+} from '@vben/request';
 
 import { useAppConfig } from '@vben/hooks';
 import { preferences } from '@vben/preferences';
@@ -23,12 +24,45 @@ import { refreshTokenApi } from './core';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
+type ApiErrorResponse = ApiResponse<unknown> & {
+  detail?: string;
+  error?: string;
+};
+
+function getResponseData(error: any): Partial<ApiErrorResponse> {
+  return error?.response?.data ?? error?.data ?? error ?? {};
+}
+
+function getResponseMessage(error: any, fallback = '请求失败') {
+  const data = getResponseData(error);
+  return data.message ?? data.detail ?? data.error ?? error?.message ?? fallback;
+}
+
+function formatSystemErrorMessage(data: Partial<ApiErrorResponse>) {
+  const fallback = '系统繁忙，请稍后重试';
+  const text = data.message || fallback;
+  return data.traceId ? `${text}（错误编号：${data.traceId}）` : text;
+}
+
+export function createIdempotencyKey() {
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  return `idem-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+export function createIdempotencyHeaders() {
+  return {
+    'Idempotency-Key': createIdempotencyKey(),
+  };
+}
+
 function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   const client = new RequestClient({
     ...options,
     baseURL,
     transformResponse: (data: any, header: AxiosResponseHeaders) => {
-      // storeAsString指示将BigInt存储为字符串，设为false则会存储为内置的BigInt类型
       if (
         header.getContentType()?.toString().includes('application/json') &&
         typeof data === 'string'
@@ -41,14 +75,13 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     },
   });
 
-  /**
-   * 重新认证逻辑
-   */
   async function doReAuthenticate() {
-    console.warn('Access token or refresh token is invalid or expired. ');
+    console.warn('Access token or refresh token is invalid or expired.');
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
     accessStore.setAccessToken(null);
+    accessStore.setRefreshToken(null);
+
     if (
       preferences.app.loginExpiredMode === 'modal' &&
       accessStore.isAccessChecked
@@ -59,9 +92,6 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     }
   }
 
-  /**
-   * 刷新token逻辑
-   */
   async function doRefreshToken() {
     const accessStore = useAccessStore();
     const resp = await refreshTokenApi({
@@ -84,7 +114,6 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     return `req-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 
-  // 请求头处理
   client.addRequestInterceptor({
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
@@ -96,7 +125,6 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     },
   });
 
-  // 处理返回的响应数据格式
   client.addResponseInterceptor(
     defaultResponseInterceptor({
       codeField: 'code',
@@ -105,7 +133,6 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     }),
   );
 
-  // token过期的处理
   client.addResponseInterceptor(
     authenticateResponseInterceptor({
       client,
@@ -116,15 +143,17 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     }),
   );
 
-  // 通用的错误处理,如果没有进入上面的错误处理逻辑，就会进入这里
   client.addResponseInterceptor(
     errorMessageResponseInterceptor((msg: string, error) => {
-      // 这里可以根据业务进行定制,你可以拿到 error 内的信息进行定制化处理，根据不同的 code 做不同的提示，而不是直接使用 message.error 提示 msg
-      // 当前mock接口返回的错误字段是 error 或者 message
-      const responseData = error?.response?.data ?? {};
-      const errorMessage = responseData?.error ?? responseData?.message ?? '';
-      // 如果没有错误信息，则会根据状态码进行提示
-      message.error(errorMessage || msg);
+      const responseData = getResponseData(error);
+      const code = responseData.code;
+
+      if (typeof code === 'number' && code >= 500_000) {
+        message.error(formatSystemErrorMessage(responseData));
+        return;
+      }
+
+      message.error(getResponseMessage(error, msg));
     }),
   );
 

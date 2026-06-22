@@ -6,16 +6,38 @@ import { isFunction } from '@vben/utils';
 
 import axios from 'axios';
 
+function getBusinessCode(errorOrResponse: any): number | undefined {
+  const code =
+    errorOrResponse?.data?.code ??
+    errorOrResponse?.response?.data?.code ??
+    errorOrResponse?.response?.code;
+
+  return typeof code === 'number' ? code : undefined;
+}
+
+function isBusinessCodeInRange(
+  code: number | undefined,
+  min: number,
+  max: number,
+) {
+  return typeof code === 'number' && code >= min && code < max;
+}
+
+function getBusinessErrorMessage(error: any) {
+  const data = error?.response?.data ?? error?.data ?? {};
+  return data?.message ?? data?.detail ?? data?.error;
+}
+
 export const defaultResponseInterceptor = ({
   codeField = 'code',
   dataField = 'data',
   successCode = 0,
 }: {
-  /** 响应数据中代表访问结果的字段名 */
+  /** Response code field name. */
   codeField: string;
-  /** 响应数据中装载实际数据的字段名，或者提供一个函数从响应数据中解析需要返回的数据 */
+  /** Response data field name, or a resolver that extracts data. */
   dataField: ((response: any) => any) | string;
-  /** 当codeField所指定的字段值与successCode相同时，代表接口访问成功。如果提供一个函数，则返回true代表接口访问成功 */
+  /** Successful business code. */
   successCode: ((code: any) => boolean) | number | string;
 }): ResponseInterceptorConfig => {
   return {
@@ -37,8 +59,13 @@ export const defaultResponseInterceptor = ({
           return isFunction(dataField)
             ? dataField(responseData)
             : responseData[dataField];
+        } else if (
+          Object.prototype.hasOwnProperty.call(responseData ?? {}, codeField)
+        ) {
+          throw Object.assign({}, response, { response });
         }
       }
+
       throw Object.assign({}, response, { response });
     },
   };
@@ -60,17 +87,20 @@ export const authenticateResponseInterceptor = ({
   return {
     rejected: async (error) => {
       const { config, response } = error;
-      // 如果不是 401 错误，直接抛出异常
-      if (response?.status !== 401) {
+      const businessCode = getBusinessCode(error);
+      const isUnauthorized =
+        response?.status === 401 ||
+        isBusinessCodeInRange(businessCode, 401_000, 402_000);
+
+      if (!isUnauthorized) {
         throw error;
       }
-      // 判断是否启用了 refreshToken 功能
-      // 如果没有启用或者已经是重试请求了，直接跳转到重新登录
+
       if (!enableRefreshToken || config.__isRetryRequest) {
         await doReAuthenticate();
         throw error;
       }
-      // 如果正在刷新 token，则将请求加入队列，等待刷新完成
+
       if (client.isRefreshing) {
         return new Promise((resolve) => {
           client.refreshTokenQueue.push((newToken: string) => {
@@ -80,22 +110,17 @@ export const authenticateResponseInterceptor = ({
         });
       }
 
-      // 标记开始刷新 token
       client.isRefreshing = true;
-      // 标记当前请求为重试请求，避免无限循环
       config.__isRetryRequest = true;
 
       try {
         const newToken = await doRefreshToken();
 
-        // 处理队列中的请求
         client.refreshTokenQueue.forEach((callback) => callback(newToken));
-        // 清空队列
         client.refreshTokenQueue = [];
 
         return client.request(error.config.url, { ...error.config });
       } catch (refreshError) {
-        // 如果刷新 token 失败，处理错误（如强制登出或跳转登录页面）
         client.refreshTokenQueue.forEach((callback) => callback(''));
         client.refreshTokenQueue = [];
         console.error('Refresh token failed, please login again.');
@@ -127,6 +152,28 @@ export const errorMessageResponseInterceptor = (
       }
       if (errMsg) {
         makeErrorMessage?.(errMsg, error);
+        return Promise.reject(error);
+      }
+
+      const businessCode = getBusinessCode(error);
+      const businessMessage = getBusinessErrorMessage(error);
+      if (typeof businessCode === 'number') {
+        const traceId = error?.response?.data?.traceId ?? error?.data?.traceId;
+
+        if (businessCode >= 500_000) {
+          makeErrorMessage?.(
+            traceId
+              ? `${businessMessage || $t('ui.fallback.http.internalServerError')} (${traceId})`
+              : businessMessage || $t('ui.fallback.http.internalServerError'),
+            error,
+          );
+          return Promise.reject(error);
+        }
+
+        makeErrorMessage?.(
+          businessMessage || $t('ui.fallback.http.badRequest'),
+          error,
+        );
         return Promise.reject(error);
       }
 
