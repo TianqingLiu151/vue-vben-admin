@@ -72,6 +72,19 @@ const routes: RouteRecordRaw[] = [
         name: 'SystemScheduler',
         path: '/system/scheduler',
       },
+      {
+        component: () => import('#/views/system/audit/index.vue'),
+        meta: {
+          authority: [
+            'system:audit:login:list',
+            'system:audit:operation:list',
+          ],
+          icon: 'lucide:scroll-text',
+          title: $t('system.audit.title'),
+        },
+        name: 'SystemAudit',
+        path: '/system/audit',
+      },
     ],
   },
 ];

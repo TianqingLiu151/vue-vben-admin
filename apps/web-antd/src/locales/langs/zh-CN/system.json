@@ -1,5 +1,8 @@
 {
   "title": "系统管理",
+  "audit": {
+    "title": "审计日志"
+  },
   "dept": {
     "list": "部门列表",
     "createTime": "创建时间",
