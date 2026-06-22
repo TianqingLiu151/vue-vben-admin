@@ -44,6 +44,17 @@ function normalizeUserInfo(raw: Record<string, any> & UserInfo): UserInfo {
     userInfo.homePath = homePath;
   }
 
+  const deptId = pickFirstDefined(
+    userInfo.deptId,
+    raw.dept_id,
+    raw.deptid,
+    raw.profile?.deptId,
+    raw.profile?.dept_id,
+  );
+  if (deptId !== undefined) {
+    userInfo.deptId = deptId;
+  }
+
   return userInfo;
 }
 

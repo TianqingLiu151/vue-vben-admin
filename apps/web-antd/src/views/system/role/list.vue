@@ -11,13 +11,13 @@ import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message, Modal } from 'ant-design-vue';
+import { Button, message, Modal, Tag } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteRole, getRoleList, updateRole } from '#/api';
 import { $t } from '#/locales';
 
-import { useColumns, useGridFormSchema } from './data';
+import { getDataScopeOption, useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
 
 const { hasAccessByCodes } = useAccess();
@@ -144,11 +144,24 @@ function onRefresh() {
 function onCreate() {
   formDrawerApi.setData({}).open();
 }
+
+function getDataScopeLabel(row: SystemRoleApi.SystemRole) {
+  const option = getDataScopeOption(row.dataScope);
+  if (row.dataScope === 'custom') {
+    return `${option?.label ?? row.dataScope}（${row.deptIds?.length ?? 0}）`;
+  }
+  return option?.label ?? row.dataScope ?? '-';
+}
 </script>
 <template>
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
     <Grid :table-title="$t('system.role.list')">
+      <template #dataScope="{ row }">
+        <Tag :color="getDataScopeOption(row.dataScope)?.color">
+          {{ getDataScopeLabel(row) }}
+        </Tag>
+      </template>
       <template #toolbar-tools>
         <Button
           v-if="can('system:role:create')"

@@ -185,6 +185,7 @@ export function useFormSchema(): VbenFormSchema[] {
 
 export function useColumns(
   onActionClick: OnActionClickFn<ProductTableApi.Product>,
+  can?: (code: string) => boolean,
 ): VxeTableGridColumns<ProductTableApi.Product> {
   return [
     {
@@ -236,6 +237,16 @@ export function useColumns(
       width: 100,
     },
     {
+      field: 'ownerId',
+      title: '归属用户',
+      width: 100,
+    },
+    {
+      field: 'deptId',
+      title: '归属部门',
+      width: 160,
+    },
+    {
       field: 'releaseDate',
       title: '发布日期',
       width: 180,
@@ -249,6 +260,16 @@ export function useColumns(
           onClick: onActionClick,
         },
         name: 'CellOperation',
+        options: [
+          {
+            code: 'edit',
+            show: () => can?.('demo:table:update') || can?.('table:update'),
+          },
+          {
+            code: 'delete',
+            show: () => can?.('demo:table:delete') || can?.('table:delete'),
+          },
+        ],
       },
       field: 'operation',
       fixed: 'right',

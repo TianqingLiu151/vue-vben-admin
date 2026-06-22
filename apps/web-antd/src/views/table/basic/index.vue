@@ -9,7 +9,7 @@ import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message } from 'ant-design-vue';
+import { Button, Empty, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteTableItem, getTableList } from '#/api';
@@ -30,7 +30,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     submitOnChange: true,
   },
   gridOptions: {
-    columns: useColumns(onActionClick),
+    columns: useColumns(onActionClick, can),
     height: 'auto',
     keepSource: true,
     proxyConfig: {
@@ -59,6 +59,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function can(code: string) {
   return hasAccessByCodes([code]);
+}
+
+function canAny(codes: string[]) {
+  return codes.some((code) => can(code));
 }
 
 function onActionClick(e: OnActionClickParams<ProductTableApi.Product>) {
@@ -96,8 +100,15 @@ function onDelete(row: ProductTableApi.Product) {
       });
       onRefresh();
     })
-    .catch(() => {
+    .catch((error) => {
       hideLoading();
+      const status = error?.response?.status;
+      if (status === 403) {
+        message.error('无权访问该数据');
+      } else if (status === 404) {
+        message.error('数据不存在或无权访问');
+        onRefresh();
+      }
     });
 }
 
@@ -110,8 +121,15 @@ function onRefresh() {
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
     <Grid table-title="基础表格">
+      <template #empty>
+        <Empty description="当前范围内暂无数据" />
+      </template>
       <template #toolbar-tools>
-        <Button v-if="can('table:create')" type="primary" @click="onCreate">
+        <Button
+          v-if="canAny(['demo:table:create', 'table:create'])"
+          type="primary"
+          @click="onCreate"
+        >
           <Plus class="size-5" />
           新增商品
         </Button>

@@ -2,10 +2,39 @@ import type { VbenFormSchema } from '#/adapter/form';
 import type { OnActionClickFn, VxeTableGridColumns } from '#/adapter/vxe-table';
 import type { SystemRoleApi } from '#/api';
 
+import { z } from '#/adapter/form';
+import { getDeptList } from '#/api';
 import { $t } from '#/locales';
 
-export function useFormSchema(): VbenFormSchema[] {
+export const dataScopeOptions: Array<{
+  color: string;
+  label: string;
+  value: SystemRoleApi.DataScope;
+}> = [
+  { color: 'default', label: '本人数据', value: 'self' },
+  { color: 'processing', label: '本部门数据', value: 'dept' },
+  { color: 'success', label: '本部门及下级', value: 'dept_tree' },
+  { color: 'warning', label: '自定义部门', value: 'custom' },
+  { color: 'error', label: '全部数据', value: 'all' },
+];
+
+export function getDataScopeOption(dataScope?: string) {
+  return dataScopeOptions.find((item) => item.value === dataScope);
+}
+
+export function useFormSchema(options?: {
+  onDataScopeChange?: (dataScope: SystemRoleApi.DataScope) => void;
+}): VbenFormSchema[] {
   return [
+    {
+      component: 'Divider',
+      fieldName: 'baseInfoDivider',
+      formItemClass: 'col-span-2 md:col-span-2 pb-0',
+      hideLabel: true,
+      renderComponentContent: () => ({
+        default: () => '基础信息',
+      }),
+    },
     {
       component: 'Input',
       fieldName: 'code',
@@ -38,11 +67,70 @@ export function useFormSchema(): VbenFormSchema[] {
       label: $t('system.role.remark'),
     },
     {
+      component: 'Divider',
+      fieldName: 'menuPermissionDivider',
+      formItemClass: 'col-span-2 md:col-span-2 pb-0',
+      hideLabel: true,
+      renderComponentContent: () => ({
+        default: () => '菜单权限',
+      }),
+    },
+    {
       component: 'Input',
       fieldName: 'menuIds',
       formItemClass: 'items-start',
       label: $t('system.role.setPermissions'),
       modelPropName: 'modelValue',
+    },
+    {
+      component: 'Divider',
+      fieldName: 'dataPermissionDivider',
+      formItemClass: 'col-span-2 md:col-span-2 pb-0',
+      hideLabel: true,
+      renderComponentContent: () => ({
+        default: () => '数据权限',
+      }),
+    },
+    {
+      component: 'Select',
+      componentProps: {
+        class: 'w-full',
+        onChange(value: SystemRoleApi.DataScope) {
+          options?.onDataScopeChange?.(value);
+        },
+        options: dataScopeOptions,
+      },
+      defaultValue: 'self',
+      fieldName: 'dataScope',
+      label: '数据范围',
+      rules: 'selectRequired',
+    },
+    {
+      component: 'ApiTreeSelect',
+      componentProps: {
+        allowClear: true,
+        api: getDeptList,
+        childrenField: 'children',
+        class: 'w-full',
+        labelField: 'name',
+        multiple: true,
+        showCheckedStrategy: 'SHOW_PARENT',
+        showSearch: true,
+        treeCheckable: true,
+        treeDefaultExpandAll: true,
+        valueField: 'id',
+      },
+      dependencies: {
+        rules: (values) =>
+          values.dataScope === 'custom'
+            ? z.array(z.string()).min(1, '请选择至少一个部门')
+            : null,
+        show: (values) => values.dataScope === 'custom',
+        triggerFields: ['dataScope'],
+      },
+      defaultValue: [],
+      fieldName: 'deptIds',
+      label: '自定义部门',
     },
   ];
 }
@@ -111,6 +199,12 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
       field: 'remark',
       minWidth: 100,
       title: $t('system.role.remark'),
+    },
+    {
+      field: 'dataScope',
+      slots: { default: 'dataScope' },
+      title: '数据范围',
+      width: 180,
     },
     {
       field: 'createTime',

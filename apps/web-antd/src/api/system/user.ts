@@ -7,6 +7,7 @@ export namespace SystemUserApi {
     id: number;
     username: string;
     realName?: string;
+    deptId?: string;
     roles?: string[];
     homePath?: string;
     status?: 0 | 1;
@@ -19,6 +20,7 @@ export namespace SystemUserApi {
     username: string;
     password: string;
     realName?: string;
+    deptId?: string;
     status?: 0 | 1;
     roles: string[];
     homePath?: string;
@@ -26,6 +28,7 @@ export namespace SystemUserApi {
 
   export interface UserUpdate {
     realName?: string;
+    deptId?: string;
     status?: 0 | 1;
     roles?: string[];
     homePath?: string;

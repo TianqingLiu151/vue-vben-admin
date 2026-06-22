@@ -10,11 +10,13 @@ export namespace ProductTableApi {
     createdAt?: string;
     currency?: string;
     description?: string;
+    deptId?: string;
     id: string;
     imageUrl?: string;
     imageUrl2?: string;
     inProduction: boolean;
     isOpen: boolean;
+    ownerId?: number;
     price?: number;
     productName: string;
     quantity?: number;

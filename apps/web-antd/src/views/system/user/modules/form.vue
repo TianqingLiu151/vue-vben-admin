@@ -52,6 +52,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
     try {
       if (id.value) {
         const payload: SystemUserApi.UserUpdate = {
+          deptId: toOptionalString(values.deptId),
           homePath: toOptionalString(values.homePath),
           realName: toOptionalString(values.realName),
           roles,
@@ -82,6 +83,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         }
 
         await createUser({
+          deptId: toOptionalString(values.deptId),
           homePath: toOptionalString(values.homePath),
           password,
           realName: toOptionalString(values.realName),
@@ -92,7 +94,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
       }
       emits('success');
       drawerApi.close();
-    } catch {
+    } catch (error) {
+      showDataScopeError(error);
       drawerApi.unlock();
     }
   },
@@ -133,6 +136,21 @@ const getDrawerTitle = computed(() => {
 function toOptionalString(value?: string) {
   const trimmed = value?.trim();
   return trimmed || undefined;
+}
+
+function showDataScopeError(error: any) {
+  const status = error?.response?.status;
+  const responseData = error?.response?.data ?? {};
+  const errorMessage = responseData?.error ?? responseData?.message ?? '';
+
+  if (status === 400 && errorMessage.includes('Unknown department')) {
+    message.error('部门不存在或已被删除');
+  } else if (
+    status === 403 &&
+    errorMessage.includes('Cannot assign a department')
+  ) {
+    message.error('不能分配无权访问的部门');
+  }
 }
 </script>
 <template>

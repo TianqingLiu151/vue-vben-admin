@@ -3,7 +3,7 @@ import type { OnActionClickFn, VxeTableGridColumns } from '#/adapter/vxe-table';
 import type { SystemUserApi } from '#/api';
 
 import { z } from '#/adapter/form';
-import { getRoleOptions } from '#/api';
+import { getDeptList, getRoleOptions } from '#/api';
 import { $t } from '#/locales';
 
 export function useFormSchema(options?: {
@@ -41,6 +41,21 @@ export function useFormSchema(options?: {
       fieldName: 'realName',
       label: $t('system.user.realName'),
       rules: z.string().optional(),
+    },
+    {
+      component: 'ApiTreeSelect',
+      componentProps: {
+        allowClear: true,
+        api: getDeptList,
+        childrenField: 'children',
+        class: 'w-full',
+        labelField: 'name',
+        showSearch: true,
+        treeDefaultExpandAll: true,
+        valueField: 'id',
+      },
+      fieldName: 'deptId',
+      label: '所属部门',
     },
     {
       component: 'ApiSelect',
@@ -104,6 +119,7 @@ export function useGridFormSchema(): VbenFormSchema[] {
 export function useColumns(
   onActionClick: OnActionClickFn<SystemUserApi.SystemUser>,
   can: (code: string) => boolean,
+  getDeptName?: (deptId?: string) => string,
 ): VxeTableGridColumns<SystemUserApi.SystemUser> {
   return [
     {
@@ -122,6 +138,13 @@ export function useColumns(
         Array.isArray(cellValue) ? cellValue.join(', ') : '',
       minWidth: 220,
       title: $t('system.user.roles'),
+    },
+    {
+      field: 'deptId',
+      formatter: ({ cellValue }) =>
+        getDeptName?.(cellValue) ?? cellValue ?? '-',
+      minWidth: 160,
+      title: '所属部门',
     },
     {
       cellRender: { name: 'CellTag' },

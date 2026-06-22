@@ -5,6 +5,8 @@ import type {
 } from '#/adapter/vxe-table';
 import type { SystemUserApi } from '#/api';
 
+import { onMounted, ref } from 'vue';
+
 import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
@@ -12,13 +14,15 @@ import { Plus } from '@vben/icons';
 import { Button, message } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteUser, getUserList } from '#/api';
+import { deleteUser, getDeptList, getUserList } from '#/api';
 import { $t } from '#/locales';
 
+import { flattenDeptTree, getDeptName as resolveDeptName } from '../dept/utils';
 import { useColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
 
 const { hasAccessByCodes } = useAccess();
+const deptMap = ref(new Map());
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: Form,
@@ -31,7 +35,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     submitOnChange: true,
   },
   gridOptions: {
-    columns: useColumns(onActionClick, can),
+    columns: useColumns(onActionClick, can, getDeptName),
     height: 'auto',
     keepSource: true,
     proxyConfig: {
@@ -58,8 +62,24 @@ const [Grid, gridApi] = useVbenVxeGrid({
   } as VxeTableGridOptions<SystemUserApi.SystemUser>,
 });
 
+onMounted(() => {
+  loadDeptMap();
+});
+
 function can(code: string) {
   return hasAccessByCodes([code]);
+}
+
+function getDeptName(deptId?: string) {
+  return resolveDeptName(deptId, deptMap.value);
+}
+
+async function loadDeptMap() {
+  try {
+    deptMap.value = flattenDeptTree(await getDeptList());
+  } catch {
+    deptMap.value = new Map();
+  }
 }
 
 function onActionClick(e: OnActionClickParams<SystemUserApi.SystemUser>) {

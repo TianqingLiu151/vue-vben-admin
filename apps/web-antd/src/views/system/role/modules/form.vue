@@ -10,7 +10,7 @@ import { computed, nextTick, ref } from 'vue';
 import { Tree, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import { Spin } from 'ant-design-vue';
+import { message, Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getMenuList } from '#/api/system/menu';
@@ -24,7 +24,13 @@ const emits = defineEmits(['success']);
 const formData = ref<SystemRoleApi.SystemRole>();
 
 const [Form, formApi] = useVbenForm({
-  schema: useFormSchema(),
+  schema: useFormSchema({
+    onDataScopeChange: (dataScope) => {
+      if (dataScope !== 'custom') {
+        formApi.setValues({ deptIds: [] });
+      }
+    },
+  }),
   showDefaultActions: false,
 });
 
@@ -37,8 +43,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
     const { valid } = await formApi.validate();
     if (!valid) return;
     const values = await formApi.getValues();
+    const dataScope = values.dataScope ?? 'self';
     const payload = {
       code: values.code,
+      dataScope,
+      deptIds: dataScope === 'custom' ? (values.deptIds ?? []) : [],
       menuIds: values.menuIds ?? values.permissions ?? [],
       name: values.name,
       remark: values.remark,
@@ -53,7 +62,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
         emits('success');
         drawerApi.close();
       })
-      .catch(() => {
+      .catch((error) => {
+        showDataScopeError(error);
         drawerApi.unlock();
       });
   },
@@ -78,7 +88,15 @@ const [Drawer, drawerApi] = useVbenDrawer({
       if (data) {
         formApi.setValues({
           ...data,
+          dataScope: data.dataScope ?? 'self',
+          deptIds: data.deptIds ?? [],
           menuIds: data.menuIds ?? data.permissions ?? [],
+        });
+      } else {
+        formApi.setValues({
+          dataScope: 'self',
+          deptIds: [],
+          status: 1,
         });
       }
     }
@@ -108,6 +126,23 @@ function getNodeClass(node: Recordable<any>) {
   }
 
   return classes.join(' ');
+}
+
+function showDataScopeError(error?: any) {
+  const status = error?.response?.status;
+  const responseData = error?.response?.data ?? {};
+  const errorMessage = responseData?.error ?? responseData?.message ?? '';
+
+  if (status === 403 && errorMessage.includes('all')) {
+    message.error('只有超级管理员可以授予全部数据范围');
+  } else if (
+    status === 403 &&
+    errorMessage.includes('Cannot assign a department')
+  ) {
+    message.error('不能分配无权访问的部门');
+  } else if (status === 400 && errorMessage.includes('Unknown department')) {
+    message.error('部门不存在或已被删除，请刷新后重新选择');
+  }
 }
 </script>
 <template>
