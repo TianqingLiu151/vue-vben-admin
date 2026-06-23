@@ -12,6 +12,7 @@ import {
   errorMessageResponseInterceptor,
   RequestClient,
 } from '@vben/request';
+import { $t, $te } from '@vben/locales';
 import { useAccessStore } from '@vben/stores';
 import { cloneDeep } from '@vben/utils';
 
@@ -43,6 +44,20 @@ function getResponseMessage(error: any, fallback = '请求失败') {
   );
 }
 
+function getLocalizedErrorMessage(error: any, fallback = '请求失败') {
+  const data = getResponseData(error);
+  const code = data.code;
+
+  if (typeof code === 'number') {
+    const localeKey = `errorCode.${code}`;
+    if ($te(localeKey)) {
+      return $t(localeKey);
+    }
+  }
+
+  return getResponseMessage(error, fallback);
+}
+
 function isPasswordChangeRequired(error: any) {
   const data = getResponseData(error);
 
@@ -58,9 +73,12 @@ function isAuthLoginRequest(error: any) {
   return url === AUTH_LOGIN_PATH || url.endsWith(AUTH_LOGIN_PATH);
 }
 
-function formatSystemErrorMessage(data: Partial<ApiErrorResponse>) {
-  const fallback = '系统繁忙，请稍后重试';
-  const text = data.message || fallback;
+function formatSystemErrorMessage(error: any, fallback?: string) {
+  const data = getResponseData(error);
+  const text = getLocalizedErrorMessage(
+    error,
+    fallback || $t('ui.fallback.http.internalServerError'),
+  );
   return data.traceId ? `${text}（错误编号：${data.traceId}）` : text;
 }
 
@@ -191,11 +209,11 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       const code = responseData.code;
 
       if (typeof code === 'number' && code >= 500_000) {
-        message.error(formatSystemErrorMessage(responseData));
+        message.error(formatSystemErrorMessage(error, msg));
         return;
       }
 
-      message.error(getResponseMessage(error, msg));
+      message.error(getLocalizedErrorMessage(error, msg));
     }),
   );
 
