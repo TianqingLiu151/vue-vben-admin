@@ -11,10 +11,15 @@ import { useAccess } from '@vben/access';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { Plus } from '@vben/icons';
 
-import { Button, message } from 'ant-design-vue';
+import { Button, message, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteUser, getDeptList, getUserList } from '#/api';
+import {
+  deleteUser,
+  forceLogoutUserApi,
+  getDeptList,
+  getUserList,
+} from '#/api';
 import { $t } from '#/locales';
 
 import { flattenDeptTree, getDeptName as resolveDeptName } from '../dept/utils';
@@ -92,6 +97,10 @@ function onActionClick(e: OnActionClickParams<SystemUserApi.SystemUser>) {
       onEdit(e.row);
       break;
     }
+    case 'forceLogout': {
+      onForceLogout(e.row);
+      break;
+    }
     default: {
       break;
     }
@@ -119,6 +128,20 @@ function onDelete(row: SystemUserApi.SystemUser) {
     .catch(() => {
       hideLoading();
     });
+}
+
+function onForceLogout(row: SystemUserApi.SystemUser) {
+  Modal.confirm({
+    content: `确认强制下线用户 ${row.username} 的全部在线会话吗？`,
+    okButtonProps: { danger: true },
+    okText: '强制下线',
+    onOk: async () => {
+      const result = await forceLogoutUserApi(row.id);
+      message.success(`已下线 ${result?.revoked ?? 0} 个会话`);
+      onRefresh();
+    },
+    title: '强制下线',
+  });
 }
 
 function onCreate() {

@@ -73,12 +73,19 @@ const routes: RouteRecordRaw[] = [
         path: '/system/scheduler',
       },
       {
+        component: () => import('#/views/system/online-user/index.vue'),
+        meta: {
+          authority: ['system:online-user:list'],
+          icon: 'lucide:monitor-dot',
+          title: '在线用户',
+        },
+        name: 'SystemOnlineUser',
+        path: '/system/online-user',
+      },
+      {
         component: () => import('#/views/system/audit/index.vue'),
         meta: {
-          authority: [
-            'system:audit:login:list',
-            'system:audit:operation:list',
-          ],
+          authority: ['system:audit:login:list', 'system:audit:operation:list'],
           icon: 'lucide:scroll-text',
           title: $t('system.audit.title'),
         },

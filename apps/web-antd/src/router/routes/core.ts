@@ -46,6 +46,15 @@ const coreRoutes: RouteRecordRaw[] = [
           title: $t('page.auth.profile'),
         },
       },
+      {
+        name: 'AccountSessions',
+        path: '/account/sessions',
+        component: () => import('#/views/_core/account/sessions.vue'),
+        meta: {
+          hideInMenu: true,
+          title: '我的设备',
+        },
+      },
     ],
   },
   {
@@ -90,6 +99,15 @@ const coreRoutes: RouteRecordRaw[] = [
           import('#/views/_core/authentication/forget-password.vue'),
         meta: {
           title: $t('page.auth.forgetPassword'),
+        },
+      },
+      {
+        name: 'ForceChangePassword',
+        path: 'force-change-password',
+        component: () =>
+          import('#/views/_core/authentication/force-change-password.vue'),
+        meta: {
+          title: '修改密码',
         },
       },
       {

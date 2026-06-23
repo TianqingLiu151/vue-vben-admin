@@ -23,6 +23,7 @@ interface AccessState {
    * 登录 accessToken
    */
   accessToken: AccessToken;
+  expiresIn?: number;
   /**
    * 是否已经检查过权限
    */
@@ -39,6 +40,8 @@ interface AccessState {
    * 登录是否过期
    */
   loginExpired: boolean;
+  mustChangePassword: boolean;
+  refreshExpiresIn?: number;
   /**
    * 登录 accessToken
    */
@@ -85,14 +88,46 @@ export const useAccessStore = defineStore('core-access', {
     setAccessToken(token: AccessToken) {
       this.accessToken = token;
     },
+    setExpiresIn(expiresIn?: number) {
+      this.expiresIn = expiresIn;
+    },
     setIsAccessChecked(isAccessChecked: boolean) {
       this.isAccessChecked = isAccessChecked;
     },
     setLoginExpired(loginExpired: boolean) {
       this.loginExpired = loginExpired;
     },
+    setMustChangePassword(mustChangePassword: boolean) {
+      this.mustChangePassword = mustChangePassword;
+    },
+    setRefreshExpiresIn(refreshExpiresIn?: number) {
+      this.refreshExpiresIn = refreshExpiresIn;
+    },
     setRefreshToken(token: AccessToken) {
       this.refreshToken = token;
+    },
+    setTokenPayload(payload: {
+      accessToken?: AccessToken;
+      expiresIn?: number;
+      mustChangePassword?: boolean;
+      refreshExpiresIn?: number;
+      refreshToken?: AccessToken;
+    }) {
+      if ('accessToken' in payload) {
+        this.accessToken = payload.accessToken ?? null;
+      }
+      if ('refreshToken' in payload) {
+        this.refreshToken = payload.refreshToken ?? null;
+      }
+      if ('expiresIn' in payload) {
+        this.expiresIn = payload.expiresIn;
+      }
+      if ('refreshExpiresIn' in payload) {
+        this.refreshExpiresIn = payload.refreshExpiresIn;
+      }
+      if ('mustChangePassword' in payload) {
+        this.mustChangePassword = !!payload.mustChangePassword;
+      }
     },
     unlockScreen() {
       this.isLockScreen = false;
@@ -104,6 +139,9 @@ export const useAccessStore = defineStore('core-access', {
     pick: [
       'accessToken',
       'refreshToken',
+      'expiresIn',
+      'refreshExpiresIn',
+      'mustChangePassword',
       'accessCodes',
       'isLockScreen',
       'lockScreenPassword',
@@ -114,11 +152,14 @@ export const useAccessStore = defineStore('core-access', {
     accessMenus: [],
     accessRoutes: [],
     accessToken: null,
+    expiresIn: undefined,
     isAccessChecked: false,
     isLockScreen: false,
     lockScreenPassword: undefined,
     loginExpired: false,
+    mustChangePassword: false,
     refreshToken: null,
+    refreshExpiresIn: undefined,
   }),
 });
 

@@ -6,6 +6,22 @@ import { z } from '#/adapter/form';
 import { getDeptList, getRoleOptions } from '#/api';
 import { $t } from '#/locales';
 
+const passwordTip =
+  '密码至少 8 位，并包含大小写字母、数字、特殊字符中的至少 3 类。';
+
+function isStrongPassword(value?: string) {
+  if (!value) return true;
+
+  const groups = [
+    /[a-z]/.test(value),
+    /[A-Z]/.test(value),
+    /\d/.test(value),
+    /[^A-Za-z0-9]/.test(value),
+  ].filter(Boolean).length;
+
+  return value.length >= 8 && value.length <= 128 && groups >= 3;
+}
+
 export function useFormSchema(options?: {
   onRoleSearch?: (keyword: string) => void;
 }): VbenFormSchema[] {
@@ -26,15 +42,15 @@ export function useFormSchema(options?: {
     },
     {
       component: 'InputPassword',
-      dependencies: {
-        show: (values) => {
-          return !values.id;
-        },
-        triggerFields: ['id'],
+      componentProps: {
+        placeholder: '编辑用户时留空表示不重置密码',
       },
+      description: passwordTip,
       fieldName: 'password',
       label: $t('system.user.password'),
-      rules: z.string().optional(),
+      rules: z.string().optional().refine(isStrongPassword, {
+        message: passwordTip,
+      }),
     },
     {
       component: 'Input',
@@ -173,6 +189,12 @@ export function useColumns(
         name: 'CellOperation',
         options: [
           {
+            code: 'forceLogout',
+            danger: true,
+            show: () => can('system:user:force-logout'),
+            text: '强制下线',
+          },
+          {
             code: 'edit',
             show: () => can('system:user:update'),
           },
@@ -185,7 +207,7 @@ export function useColumns(
       field: 'operation',
       fixed: 'right',
       title: $t('system.user.operation'),
-      width: 140,
+      width: 180,
     },
   ];
 }

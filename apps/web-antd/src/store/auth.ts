@@ -13,6 +13,8 @@ import { defineStore } from 'pinia';
 import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
 import { $t } from '#/locales';
 
+export const FORCE_CHANGE_PASSWORD_PATH = '/auth/force-change-password';
+
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
   const userStore = useUserStore();
@@ -20,40 +22,48 @@ export const useAuthStore = defineStore('auth', () => {
 
   const loginLoading = ref(false);
 
-  /**
-   * 异步处理登录操作
-   * Asynchronously handle the login process
-   * @param params 登录表单数据
-   * @param onSuccess 成功之后的回调函数
-   */
   async function authLogin(
     params: Recordable<any>,
     onSuccess?: () => Promise<void> | void,
   ) {
-    // 异步处理用户登录操作并获取 accessToken
     let userInfo: null | UserInfo = null;
+
     try {
       loginLoading.value = true;
-      const { accessToken, refreshToken } = await loginApi(params);
+      const loginResult = await loginApi(params);
+      const {
+        accessToken,
+        expiresIn,
+        mustChangePassword,
+        refreshExpiresIn,
+        refreshToken,
+      } = loginResult;
 
-      // 如果成功获取到 accessToken
       if (accessToken) {
-        accessStore.setAccessToken(accessToken);
-        accessStore.setRefreshToken(refreshToken);
+        accessStore.setTokenPayload({
+          accessToken,
+          expiresIn,
+          mustChangePassword,
+          refreshExpiresIn,
+          refreshToken,
+        });
 
-        // 获取用户信息并存储到 accessStore 中
-        const [fetchUserInfoResult, accessCodes] = await Promise.all([
-          fetchUserInfo(),
-          getAccessCodesApi(),
-        ]);
-
-        userInfo = fetchUserInfoResult;
-
-        userStore.setUserInfo(userInfo);
-        accessStore.setAccessCodes(accessCodes);
+        if (mustChangePassword) {
+          userInfo = await fetchUserInfo();
+        } else {
+          const [fetchUserInfoResult, accessCodes] = await Promise.all([
+            fetchUserInfo(),
+            getAccessCodesApi(),
+          ]);
+          userInfo = fetchUserInfoResult;
+          userStore.setUserInfo(userInfo);
+          accessStore.setAccessCodes(accessCodes);
+        }
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
+        } else if (mustChangePassword) {
+          await router.replace(FORCE_CHANGE_PASSWORD_PATH);
         } else {
           onSuccess
             ? await onSuccess?.()
@@ -62,9 +72,9 @@ export const useAuthStore = defineStore('auth', () => {
               );
         }
 
-        if (userInfo?.realName) {
+        if (userInfo?.realName && !mustChangePassword) {
           notification.success({
-            description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+            description: `${$t('authentication.loginSuccessDesc')}:${userInfo.realName}`,
             duration: 3,
             message: $t('authentication.loginSuccess'),
           });
@@ -79,24 +89,23 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
-  const isLoggingOut = ref(false); // 正在 logout 标识, 防止 /logout 死循环.
+  const isLoggingOut = ref(false);
 
   async function logout(redirect: boolean = true) {
-    if (isLoggingOut.value) return; // 正在登出中, 说明已进入循环, 直接返回.
-    isLoggingOut.value = true; // 设置 标识
+    if (isLoggingOut.value) return;
+    isLoggingOut.value = true;
 
     try {
       await logoutApi();
     } catch {
-      // 不做任何处理
+      // Logout must clear local state even if the server rejects the request.
     } finally {
-      isLoggingOut.value = false; // 重置 标识
-
+      isLoggingOut.value = false;
       resetAllStores();
       accessStore.setLoginExpired(false);
+      accessStore.setMustChangePassword(false);
     }
 
-    // 回登录页带上当前路由地址
     await router.replace({
       path: LOGIN_PATH,
       query: redirect

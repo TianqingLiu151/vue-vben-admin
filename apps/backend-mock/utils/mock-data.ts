@@ -46,6 +46,9 @@ export const MOCK_CODES = [
       'system:user:create',
       'system:user:update',
       'system:user:delete',
+      'system:user:force-logout',
+      'system:online-user:list',
+      'system:online-user:kick',
       'system:role:list',
       'system:role:create',
       'system:role:update',
@@ -73,6 +76,9 @@ export const MOCK_CODES = [
       'system:user:create',
       'system:user:update',
       'system:user:delete',
+      'system:user:force-logout',
+      'system:online-user:list',
+      'system:online-user:kick',
       'system:role:list',
       'system:role:create',
       'system:role:update',
@@ -182,12 +188,19 @@ const systemMenus = [
         path: '/system/dept',
       },
       {
+        component: '/system/online-user/index',
+        meta: {
+          authority: ['system:online-user:list'],
+          icon: 'lucide:monitor-dot',
+          title: '在线用户',
+        },
+        name: 'SystemOnlineUser',
+        path: '/system/online-user',
+      },
+      {
         component: '/system/audit/index',
         meta: {
-          authority: [
-            'system:audit:login:list',
-            'system:audit:operation:list',
-          ],
+          authority: ['system:audit:login:list', 'system:audit:operation:list'],
           icon: 'lucide:scroll-text',
           title: 'system.audit.title',
         },

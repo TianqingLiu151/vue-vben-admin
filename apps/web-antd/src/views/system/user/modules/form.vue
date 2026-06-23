@@ -5,7 +5,7 @@ import { computed, nextTick, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
 
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { createUser, updateUser } from '#/api';
@@ -60,6 +60,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
         };
         if (toOptionalString(values.password)) {
           payload.password = values.password.trim();
+        }
+        if (!(await confirmSensitiveUpdate(payload))) {
+          drawerApi.unlock();
+          return;
         }
         await updateUser(id.value, payload);
       } else {
@@ -136,6 +140,33 @@ const getDrawerTitle = computed(() => {
 function toOptionalString(value?: string) {
   const trimmed = value?.trim();
   return trimmed || undefined;
+}
+
+function confirmSensitiveUpdate(payload: SystemUserApi.UserUpdate) {
+  const tips: string[] = [];
+
+  if (payload.password) {
+    tips.push('重置密码会撤销该用户现有会话，并要求下次登录后修改密码。');
+  }
+
+  if (formData.value?.status !== 0 && payload.status === 0) {
+    tips.push('禁用用户会立即撤销该用户现有会话。');
+  }
+
+  if (tips.length === 0) {
+    return Promise.resolve(true);
+  }
+
+  return new Promise<boolean>((resolve) => {
+    Modal.confirm({
+      content: tips.join('\n'),
+      okButtonProps: { danger: true },
+      okText: '确认',
+      onCancel: () => resolve(false),
+      onOk: () => resolve(true),
+      title: '确认敏感操作',
+    });
+  });
 }
 
 function showDataScopeError(error: any) {

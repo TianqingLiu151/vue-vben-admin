@@ -6,7 +6,7 @@ import { useAccessStore, useUserStore } from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
 
 import { accessRoutes, coreRouteNames } from '#/router/routes';
-import { useAuthStore } from '#/store';
+import { FORCE_CHANGE_PASSWORD_PATH, useAuthStore } from '#/store';
 
 import { generateAccess } from './access';
 
@@ -76,9 +76,31 @@ function setupAccessGuard(router: Router) {
     const userStore = useUserStore();
     const authStore = useAuthStore();
 
+    if (
+      accessStore.accessToken &&
+      accessStore.mustChangePassword &&
+      to.path !== FORCE_CHANGE_PASSWORD_PATH
+    ) {
+      return {
+        path: FORCE_CHANGE_PASSWORD_PATH,
+        replace: true,
+      };
+    }
+
+    if (to.path === FORCE_CHANGE_PASSWORD_PATH && !accessStore.accessToken) {
+      return {
+        path: LOGIN_PATH,
+        query: { redirect: encodeURIComponent(to.fullPath) },
+        replace: true,
+      };
+    }
+
     // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string)) {
-      if (to.name === 'Profile' && !accessStore.accessToken) {
+      if (
+        ['AccountSessions', 'Profile'].includes(to.name as string) &&
+        !accessStore.accessToken
+      ) {
         return {
           path: LOGIN_PATH,
           query: { redirect: encodeURIComponent(to.fullPath) },

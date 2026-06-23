@@ -23,10 +23,12 @@ import { useAuthStore } from '#/store';
 import { refreshTokenApi } from './core';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
+const FORCE_CHANGE_PASSWORD_PATH = '/auth/force-change-password';
 
 type ApiErrorResponse = ApiResponse<unknown> & {
   detail?: string;
   error?: string;
+  traceId?: string;
 };
 
 function getResponseData(error: any): Partial<ApiErrorResponse> {
@@ -35,7 +37,16 @@ function getResponseData(error: any): Partial<ApiErrorResponse> {
 
 function getResponseMessage(error: any, fallback = '请求失败') {
   const data = getResponseData(error);
-  return data.message ?? data.detail ?? data.error ?? error?.message ?? fallback;
+  return (
+    data.message ?? data.detail ?? data.error ?? error?.message ?? fallback
+  );
+}
+
+function isPasswordChangeRequired(error: any) {
+  return (
+    error?.response?.status === 403 &&
+    getResponseMessage(error, '') === 'Password change required'
+  );
 }
 
 function formatSystemErrorMessage(data: Partial<ApiErrorResponse>) {
@@ -79,8 +90,13 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
     console.warn('Access token or refresh token is invalid or expired.');
     const accessStore = useAccessStore();
     const authStore = useAuthStore();
-    accessStore.setAccessToken(null);
-    accessStore.setRefreshToken(null);
+    accessStore.setTokenPayload({
+      accessToken: null,
+      expiresIn: undefined,
+      mustChangePassword: false,
+      refreshExpiresIn: undefined,
+      refreshToken: null,
+    });
 
     if (
       preferences.app.loginExpiredMode === 'modal' &&
@@ -98,7 +114,12 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       refreshToken: accessStore.refreshToken,
     });
     const newToken = resp.accessToken;
-    accessStore.setAccessToken(newToken);
+    accessStore.setTokenPayload({
+      accessToken: resp.accessToken,
+      expiresIn: resp.expiresIn,
+      refreshExpiresIn: resp.refreshExpiresIn,
+      refreshToken: resp.refreshToken,
+    });
     return newToken;
   }
 
@@ -145,6 +166,17 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 
   client.addResponseInterceptor(
     errorMessageResponseInterceptor((msg: string, error) => {
+      if (isPasswordChangeRequired(error)) {
+        const accessStore = useAccessStore();
+        accessStore.setMustChangePassword(true);
+        void import('#/router').then(({ router }) => {
+          if (router.currentRoute.value.path !== FORCE_CHANGE_PASSWORD_PATH) {
+            router.replace(FORCE_CHANGE_PASSWORD_PATH);
+          }
+        });
+        return;
+      }
+
       const responseData = getResponseData(error);
       const code = responseData.code;
 
