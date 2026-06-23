@@ -4,11 +4,13 @@ export namespace SystemDeptApi {
   export interface SystemDept {
     [key: string]: any;
     children?: SystemDept[];
+    createdAt?: string;
     id: string;
     name: string;
     pid?: null | string;
     remark?: string;
     status: 0 | 1;
+    updatedAt?: string;
   }
 }
 

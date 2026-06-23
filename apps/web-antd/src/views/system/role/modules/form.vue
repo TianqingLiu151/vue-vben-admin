@@ -34,8 +34,8 @@ const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
 });
 
-const permissions = ref<DataNode[]>([]);
-const loadingPermissions = ref(false);
+const menuTree = ref<DataNode[]>([]);
+const loadingMenuTree = ref(false);
 
 const id = ref();
 const [Drawer, drawerApi] = useVbenDrawer({
@@ -48,7 +48,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       code: values.code,
       dataScope,
       deptIds: dataScope === 'custom' ? (values.deptIds ?? []) : [],
-      menuIds: values.menuIds ?? values.permissions ?? [],
+      menuIds: values.menuIds ?? [],
       name: values.name,
       remark: values.remark,
       status: values.status ?? 1,
@@ -80,8 +80,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
         id.value = undefined;
       }
 
-      if (permissions.value.length === 0) {
-        await loadPermissions();
+      if (menuTree.value.length === 0) {
+        await loadMenuTree();
       }
       // Wait for Vue to flush DOM updates (form fields mounted)
       await nextTick();
@@ -90,7 +90,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
           ...data,
           dataScope: data.dataScope ?? 'self',
           deptIds: data.deptIds ?? [],
-          menuIds: data.menuIds ?? data.permissions ?? [],
+          menuIds: data.menuIds ?? [],
         });
       } else {
         formApi.setValues({
@@ -103,13 +103,13 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
 });
 
-async function loadPermissions() {
-  loadingPermissions.value = true;
+async function loadMenuTree() {
+  loadingMenuTree.value = true;
   try {
     const res = await getMenuList();
-    permissions.value = res as unknown as DataNode[];
+    menuTree.value = res as unknown as DataNode[];
   } finally {
-    loadingPermissions.value = false;
+    loadingMenuTree.value = false;
   }
 }
 
@@ -149,9 +149,9 @@ function showDataScopeError(error?: any) {
   <Drawer :title="getDrawerTitle">
     <Form>
       <template #menuIds="slotProps">
-        <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
+        <Spin :spinning="loadingMenuTree" wrapper-class-name="w-full">
           <Tree
-            :tree-data="permissions"
+            :tree-data="menuTree"
             multiple
             bordered
             :default-expanded-level="2"

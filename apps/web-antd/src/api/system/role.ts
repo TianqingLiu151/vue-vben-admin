@@ -9,15 +9,18 @@ export namespace SystemRoleApi {
     [key: string]: any;
     id: string;
     code: string;
-    createTime?: string;
+    createdAt?: string;
     dataScope?: DataScope;
     deptIds?: string[];
     menuIds?: Array<number | string>;
     name: string;
-    permissions?: Array<number | string>;
     remark?: string;
     status: 0 | 1;
+    updatedAt?: string;
   }
+
+  export type RolePayload = Omit<SystemRole, 'createdAt' | 'id' | 'updatedAt'>;
+  export type RoleUpdatePayload = Partial<RolePayload>;
 
   export interface RoleOption {
     label: string;
@@ -38,7 +41,7 @@ async function getRoleList(params: Recordable<any>) {
  * 创建角色
  * @param data 角色数据
  */
-async function createRole(data: Omit<SystemRoleApi.SystemRole, 'id'>) {
+async function createRole(data: SystemRoleApi.RolePayload) {
   return requestClient.post('/role', data);
 }
 
@@ -50,7 +53,7 @@ async function createRole(data: Omit<SystemRoleApi.SystemRole, 'id'>) {
  */
 async function updateRole(
   id: string,
-  data: Omit<SystemRoleApi.SystemRole, 'id'>,
+  data: SystemRoleApi.RoleUpdatePayload,
 ) {
   return requestClient.put(`/role/${id}`, data);
 }

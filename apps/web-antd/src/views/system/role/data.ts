@@ -79,7 +79,7 @@ export function useFormSchema(options?: {
       component: 'Input',
       fieldName: 'menuIds',
       formItemClass: 'items-start',
-      label: $t('system.role.setPermissions'),
+      label: $t('system.role.setMenuAccess'),
       modelPropName: 'modelValue',
     },
     {
@@ -162,8 +162,8 @@ export function useGridFormSchema(): VbenFormSchema[] {
     },
     {
       component: 'RangePicker',
-      fieldName: 'createTime',
-      label: $t('system.role.createTime'),
+      fieldName: 'createdAt',
+      label: $t('system.role.createdAt'),
     },
   ];
 }
@@ -207,8 +207,13 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
       width: 180,
     },
     {
-      field: 'createTime',
-      title: $t('system.role.createTime'),
+      field: 'createdAt',
+      title: $t('system.role.createdAt'),
+      width: 200,
+    },
+    {
+      field: 'updatedAt',
+      title: $t('system.role.updatedAt'),
       width: 200,
     },
     {

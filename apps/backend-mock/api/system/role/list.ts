@@ -21,13 +21,25 @@ function generateMockDataList(count: number) {
 
   for (let i = 0; i < count; i++) {
     const dataItem: Record<string, any> = {
+      code: faker.string.alphanumeric(8).toLowerCase(),
+      dataScope: faker.helpers.arrayElement([
+        'all',
+        'custom',
+        'dept',
+        'dept_tree',
+        'self',
+      ]),
+      deptIds: [],
       id: faker.string.uuid(),
-      name: faker.commerce.product(),
+      name: faker.commerce.productName(),
       status: faker.helpers.arrayElement([0, 1]),
-      createTime: formatterCN.format(
+      createdAt: formatterCN.format(
         faker.date.between({ from: '2022-01-01', to: '2025-01-01' }),
       ),
-      permissions: faker.helpers.arrayElements(menuIds),
+      updatedAt: formatterCN.format(
+        faker.date.between({ from: '2025-01-01', to: '2026-06-23' }),
+      ),
+      menuIds: faker.helpers.arrayElements(menuIds),
       remark: faker.lorem.sentence(),
     };
 
@@ -48,8 +60,8 @@ export default eventHandler(async (event) => {
   const {
     page = 1,
     pageSize = 20,
+    code,
     name,
-    id,
     remark,
     startTime,
     endTime,
@@ -61,9 +73,9 @@ export default eventHandler(async (event) => {
       item.name.toLowerCase().includes(String(name).toLowerCase()),
     );
   }
-  if (id) {
+  if (code) {
     listData = listData.filter((item) =>
-      item.id.toLowerCase().includes(String(id).toLowerCase()),
+      item.code.toLowerCase().includes(String(code).toLowerCase()),
     );
   }
   if (remark) {
@@ -72,10 +84,10 @@ export default eventHandler(async (event) => {
     );
   }
   if (startTime) {
-    listData = listData.filter((item) => item.createTime >= startTime);
+    listData = listData.filter((item) => item.createdAt >= startTime);
   }
   if (endTime) {
-    listData = listData.filter((item) => item.createTime <= endTime);
+    listData = listData.filter((item) => item.createdAt <= endTime);
   }
   if (['0', '1'].includes(status as string)) {
     listData = listData.filter((item) => item.status === Number(status));

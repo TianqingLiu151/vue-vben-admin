@@ -22,8 +22,11 @@ function generateMockDataList(count: number) {
       pid: 0,
       name: faker.commerce.department(),
       status: faker.helpers.arrayElement([0, 1]),
-      createTime: formatterCN.format(
+      createdAt: formatterCN.format(
         faker.date.between({ from: '2021-01-01', to: '2022-12-31' }),
+      ),
+      updatedAt: formatterCN.format(
+        faker.date.between({ from: '2023-01-01', to: '2026-06-23' }),
       ),
       remark: faker.lorem.sentence(),
     };
@@ -35,8 +38,11 @@ function generateMockDataList(count: number) {
           pid: dataItem.id,
           name: faker.commerce.department(),
           status: faker.helpers.arrayElement([0, 1]),
-          createTime: formatterCN.format(
+          createdAt: formatterCN.format(
             faker.date.between({ from: '2023-01-01', to: '2023-12-31' }),
+          ),
+          updatedAt: formatterCN.format(
+            faker.date.between({ from: '2024-01-01', to: '2026-06-23' }),
           ),
           remark: faker.lorem.sentence(),
         }),
