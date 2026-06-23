@@ -51,10 +51,7 @@ async function createRole(data: SystemRoleApi.RolePayload) {
  * @param id 角色 ID
  * @param data 角色数据
  */
-async function updateRole(
-  id: string,
-  data: SystemRoleApi.RoleUpdatePayload,
-) {
+async function updateRole(id: string, data: SystemRoleApi.RoleUpdatePayload) {
   return requestClient.put(`/role/${id}`, data);
 }
 
