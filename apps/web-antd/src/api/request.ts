@@ -23,6 +23,7 @@ import { useAuthStore } from '#/store';
 import { refreshTokenApi } from './core';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
+const AUTH_LOGIN_PATH = '/auth/login';
 const FORCE_CHANGE_PASSWORD_PATH = '/auth/force-change-password';
 
 type ApiErrorResponse = ApiResponse<unknown> & {
@@ -43,10 +44,18 @@ function getResponseMessage(error: any, fallback = '请求失败') {
 }
 
 function isPasswordChangeRequired(error: any) {
+  const data = getResponseData(error);
+
   return (
-    error?.response?.status === 403 &&
-    getResponseMessage(error, '') === 'Password change required'
+    data.code === 403_102 ||
+    (error?.response?.status === 403 &&
+      getResponseMessage(error, '') === 'Password change required')
   );
+}
+
+function isAuthLoginRequest(error: any) {
+  const url = error?.config?.url ?? '';
+  return url === AUTH_LOGIN_PATH || url.endsWith(AUTH_LOGIN_PATH);
 }
 
 function formatSystemErrorMessage(data: Partial<ApiErrorResponse>) {
@@ -161,6 +170,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       doRefreshToken,
       enableRefreshToken: preferences.app.enableRefreshToken,
       formatToken,
+      shouldReAuthenticate: (error) => !isAuthLoginRequest(error),
     }),
   );
 

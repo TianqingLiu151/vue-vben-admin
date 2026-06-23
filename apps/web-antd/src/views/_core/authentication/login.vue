@@ -38,7 +38,7 @@ const CaptchaRefresh = defineComponent({
 });
 
 const formSchema = computed((): VbenFormSchema[] => {
-  return [
+  const schemas: VbenFormSchema[] = [
     {
       component: 'VbenInput',
       componentProps: {
@@ -57,14 +57,13 @@ const formSchema = computed((): VbenFormSchema[] => {
       label: $t('authentication.password'),
       rules: z.string().min(1, { message: $t('authentication.passwordTip') }),
     },
-    {
+  ];
+
+  if (showCaptcha.value) {
+    schemas.push({
       component: 'VbenInput',
       componentProps: {
         placeholder: '请输入验证码答案',
-      },
-      dependencies: {
-        show: () => showCaptcha.value,
-        triggerFields: ['username'],
       },
       description: () =>
         captchaQuestion.value
@@ -74,8 +73,10 @@ const formSchema = computed((): VbenFormSchema[] => {
       label: '验证码',
       rules: z.string().min(1, { message: '请输入验证码答案' }),
       suffix: CaptchaRefresh as any,
-    },
-  ];
+    });
+  }
+
+  return schemas;
 });
 
 async function loadCaptcha() {
@@ -89,23 +90,26 @@ async function loadCaptcha() {
   }
 }
 
+function getErrorData(error: any) {
+  return error?.response?.data ?? error?.data ?? error ?? {};
+}
+
 function shouldShowCaptcha(error: any) {
-  const status = error?.response?.status;
-  const data = error?.response?.data ?? error?.data ?? {};
+  const data = getErrorData(error);
   const text = `${data?.message ?? ''} ${data?.detail ?? ''} ${data?.error ?? ''}`;
   return (
-    status === 400 ||
-    status === 401 ||
+    data?.code === 400_101 ||
+    data?.code === 400_102 ||
     /captcha|验证码|verification/i.test(text)
   );
 }
 
 function showLoginError(error: any) {
-  const status = error?.response?.status;
-  const data = error?.response?.data ?? error?.data ?? {};
+  const status = error?.response?.status ?? error?.status;
+  const data = getErrorData(error);
   const text = data?.message ?? data?.detail ?? data?.error ?? '';
 
-  if (status === 423) {
+  if (data?.code === 422_101 || status === 423) {
     const lockedUntil = data?.data?.lockedUntil
       ? `，解锁时间：${data.data.lockedUntil}`
       : '';
@@ -118,7 +122,11 @@ function showLoginError(error: any) {
     return;
   }
 
-  if (/captcha|验证码|verification/i.test(text)) {
+  if (
+    data?.code === 400_101 ||
+    data?.code === 400_102 ||
+    /captcha|验证码|verification/i.test(text)
+  ) {
     message.warning('验证码错误或已过期，请重新输入');
     return;
   }

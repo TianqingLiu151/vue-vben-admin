@@ -77,22 +77,24 @@ export const authenticateResponseInterceptor = ({
   doRefreshToken,
   enableRefreshToken,
   formatToken,
+  shouldReAuthenticate = () => true,
 }: {
   client: RequestClient;
   doReAuthenticate: () => Promise<void>;
   doRefreshToken: () => Promise<string>;
   enableRefreshToken: boolean;
   formatToken: (token: string) => null | string;
+  shouldReAuthenticate?: (error: any) => boolean;
 }): ResponseInterceptorConfig => {
   return {
     rejected: async (error) => {
       const { config, response } = error;
       const businessCode = getBusinessCode(error);
       const isUnauthorized =
-        response?.status === 401 ||
-        isBusinessCodeInRange(businessCode, 401_000, 402_000);
+        isBusinessCodeInRange(businessCode, 401_000, 402_000) ||
+        (businessCode === undefined && response?.status === 401);
 
-      if (!isUnauthorized) {
+      if (!isUnauthorized || !shouldReAuthenticate(error)) {
         throw error;
       }
 
